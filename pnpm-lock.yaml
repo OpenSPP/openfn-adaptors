@@ -1369,6 +1369,43 @@ importers:
         specifier: ^1.17.2
         version: 1.17.7
 
+  packages/openspp:
+    dependencies:
+      '@openfn/language-common':
+        specifier: ^1.7.7
+        version: link:../common
+      odoo:
+        specifier: ^0.4.0
+        version: 0.4.0
+    devDependencies:
+      '@openfn/buildtools':
+        specifier: workspace:^1.0.2
+        version: link:../../tools/build
+      '@openfn/simple-ast':
+        specifier: 0.4.1
+        version: 0.4.1
+      assertion-error:
+        specifier: 2.0.0
+        version: 2.0.0
+      chai:
+        specifier: 4.3.6
+        version: 4.3.6
+      deep-eql:
+        specifier: 4.1.1
+        version: 4.1.1
+      esno:
+        specifier: ^0.16.3
+        version: 0.16.3
+      mocha:
+        specifier: 9.2.2
+        version: 9.2.2
+      rimraf:
+        specifier: 3.0.2
+        version: 3.0.2
+      undici:
+        specifier: ^5.22.1
+        version: 5.22.1
+
   packages/postgresql:
     dependencies:
       '@openfn/language-common':
@@ -2355,8 +2392,8 @@ packages:
     resolution: {integrity: sha512-WAwHBINyrpqywkUH0nTnNgI5ina5TFn85HKS0pbPDfxFfhyR/aNQEn4hGi1P1JyT//I0t4OgXUlofzWILRvS5w==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/template': 7.18.10
-      '@babel/types': 7.20.0
+      '@babel/template': 7.21.9
+      '@babel/types': 7.22.4
     dev: true
 
   /@babel/helper-function-name@7.22.5:
@@ -2383,7 +2420,7 @@ packages:
     resolution: {integrity: sha512-0NFvs3VkuSYbFi1x2Vd6tKrywq+z/cLeYC/RJNFrIX/30Bf5aiGYbtvGXolEktzJH8o5E5KJ3tT+nkxuuZFVlA==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/types': 7.21.3
+      '@babel/types': 7.22.4
     dev: true
 
   /@babel/helper-module-imports@7.22.5:
@@ -2425,7 +2462,7 @@ packages:
     resolution: {integrity: sha512-f9Xq6WqBFqaDfbCzn2w85hwklswz5qsKlh7f08w4Y9yhJHpnNC0QemtSkK5YyOY8kPGvyiwdzZksGUhnGdaUIg==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/types': 7.20.0
+      '@babel/types': 7.22.4
     dev: true
 
   /@babel/helper-simple-access@7.22.5:
@@ -2450,6 +2487,7 @@ packages:
   /@babel/helper-string-parser@7.19.4:
     resolution: {integrity: sha512-nHtDoQcuqFmwYNYPz3Rah5ph2p8PFeFCsZk9A/48dPc/rGocJ5J3hAAZ7pb76VWX3fZKu+uEr/FhH5jLx7umrw==}
     engines: {node: '>=6.9.0'}
+    dev: true
 
   /@babel/helper-string-parser@7.21.5:
     resolution: {integrity: sha512-5pTUx3hAJaZIdW99sJ6ZUUgWq/Y+Hja7TowEnLNMm1VivRgZQL3vpBY3qUACVsvw+yQU6+YgfBVmcbLaZtrA1w==}
@@ -3151,7 +3189,7 @@ packages:
     dependencies:
       '@jridgewell/set-array': 1.1.2
       '@jridgewell/sourcemap-codec': 1.4.14
-      '@jridgewell/trace-mapping': 0.3.17
+      '@jridgewell/trace-mapping': 0.3.18
     dev: true
 
   /@jridgewell/gen-mapping@0.3.3:
@@ -3702,7 +3740,7 @@ packages:
       call-bind: 1.0.2
       define-properties: 1.1.4
       es-abstract: 1.20.4
-      get-intrinsic: 1.1.3
+      get-intrinsic: 1.2.1
       is-string: 1.0.7
     dev: true
 
@@ -3917,16 +3955,6 @@ packages:
 
   /axios@1.1.3:
     resolution: {integrity: sha512-00tXVRwKx/FZr/IDVFt4C+f9FYairX517WoGCL6dpOntqLkZofjhu43F/Xl44UOpqa+9sLFDrG/XAnFsUYgkDA==}
-    dependencies:
-      follow-redirects: 1.15.2
-      form-data: 4.0.0
-      proxy-from-env: 1.1.0
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
-  /axios@1.4.0:
-    resolution: {integrity: sha512-S4XCWMEmzvo64T9GfvQDOXgYRDJ/wsSZc7Jvdgx5u1sd0JwsuPLqb3SYmusag+edF6ziyMensPVqLTSc1PiSEA==}
     dependencies:
       follow-redirects: 1.15.2
       form-data: 4.0.0
@@ -4651,10 +4679,6 @@ packages:
 
   /base-64@0.1.0:
     resolution: {integrity: sha512-Y5gU45svrR5tI2Vt/X9GPd3L0HNIKzGu202EjxrXMpuc2V2CiKgemAbUUsqYmZJvPtCXoUKjNZwBJzsNScUbXA==}
-    dev: false
-
-  /base-64@1.0.0:
-    resolution: {integrity: sha512-kwDPIFCGx0NZHog36dj+tHiwP4QMzsZ3AgMViUBKI0+V5n4U0ufTCUMhnQ04diaRI8EX/QcPfql7zlhZ7j4zgg==}
     dev: false
 
   /base64-js@1.5.1:
@@ -5435,7 +5459,7 @@ packages:
       js-string-escape: 1.0.1
       lodash: 4.17.21
       md5-hex: 3.0.1
-      semver: 7.3.8
+      semver: 7.5.1
       well-known-symbols: 2.0.0
     dev: false
 
@@ -6047,7 +6071,7 @@ packages:
       es-to-primitive: 1.2.1
       function-bind: 1.1.1
       function.prototype.name: 1.1.5
-      get-intrinsic: 1.1.3
+      get-intrinsic: 1.2.1
       get-symbol-description: 1.0.0
       has: 1.0.3
       has-property-descriptors: 1.0.0
@@ -6059,7 +6083,7 @@ packages:
       is-shared-array-buffer: 1.0.2
       is-string: 1.0.7
       is-weakref: 1.0.2
-      object-inspect: 1.12.2
+      object-inspect: 1.12.3
       object-keys: 1.1.1
       object.assign: 4.1.4
       regexp.prototype.flags: 1.4.3
@@ -6116,7 +6140,7 @@ packages:
       es-abstract: 1.21.2
       function-bind: 1.1.1
       functions-have-names: 1.2.3
-      get-intrinsic: 1.2.0
+      get-intrinsic: 1.2.1
       globalthis: 1.0.3
       has-property-descriptors: 1.0.0
     dev: false
@@ -7466,7 +7490,7 @@ packages:
       extend: 3.0.2
       gaxios: 4.3.3
       google-auth-library: 7.14.1
-      qs: 6.11.0
+      qs: 6.11.2
       url-template: 2.0.8
       uuid: 8.3.2
     transitivePeerDependencies:
@@ -7790,7 +7814,7 @@ packages:
     resolution: {integrity: sha512-O0DB1JC/sPyZl7cIo78n5dR7eUSwwpYPiXRhTzNxZVAMUuB8vlnRFyLxdrVToks6XPLVnFfbzaVd5WLjhgg+vA==}
     engines: {node: '>= 0.4'}
     dependencies:
-      get-intrinsic: 1.1.3
+      get-intrinsic: 1.2.1
       has: 1.0.3
       side-channel: 1.0.4
     dev: true
@@ -8403,7 +8427,7 @@ packages:
     engines: {node: '>=12.0.0'}
     hasBin: true
     dependencies:
-      '@babel/parser': 7.21.4
+      '@babel/parser': 7.22.4
       '@jsdoc/salty': 0.2.5
       '@types/markdown-it': 12.2.3
       bluebird: 3.7.2
@@ -8591,7 +8615,7 @@ packages:
       jws: 3.2.2
       lodash: 4.17.21
       ms: 2.1.3
-      semver: 7.5.0
+      semver: 7.5.1
     dev: false
 
   /jsprim@1.4.2:
@@ -9799,6 +9823,14 @@ packages:
       es-abstract: 1.20.4
     dev: true
 
+  /odoo@0.4.0:
+    resolution: {integrity: sha512-luo3PiOFyMjRjgbA5TThlflLqlhME3NNsJ+1FV4ODAuqTl5Yl0bBk3p2Q6SUTSdNJVljiqeGInQbTLljQhxuEw==}
+    engines: {node: '>=0.11.16'}
+    dependencies:
+      jayson: 1.2.2
+      lodash: 3.10.1
+    dev: false
+
   /once@1.4.0:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
     dependencies:
@@ -10070,7 +10102,7 @@ packages:
     resolution: {integrity: sha512-ayCKvm/phCGxOkYRSCM82iDwct8/EonSEgCSxWxD7ve6jHggsFl4fZVQBPRNgQoKiuV/odhFrGzQXZwbifC8Rg==}
     engines: {node: '>=8'}
     dependencies:
-      '@babel/code-frame': 7.18.6
+      '@babel/code-frame': 7.21.4
       error-ex: 1.3.2
       json-parse-even-better-errors: 2.3.1
       lines-and-columns: 1.2.4
@@ -11671,14 +11703,14 @@ packages:
     deprecated: Please upgrade to v7.0.2+ of superagent.  We have fixed numerous issues with streams, form-data, attach(), filesystem errors not bubbling up (ENOENT on attach()), and all tests are now passing.  See the releases tab for more information at <https://github.com/visionmedia/superagent/releases>.
     dependencies:
       component-emitter: 1.3.0
-      cookiejar: 2.1.3
+      cookiejar: 2.1.4
       debug: 3.2.7
       extend: 3.0.2
       form-data: 2.3.3
       formidable: 1.2.6
       methods: 1.1.2
       mime: 1.6.0
-      qs: 6.11.0
+      qs: 6.11.2
       readable-stream: 2.3.7
     transitivePeerDependencies:
       - supports-color
@@ -11900,7 +11932,7 @@ packages:
       http-basic: 8.1.3
       http-response-object: 3.0.2
       promise: 8.3.0
-      qs: 6.11.0
+      qs: 6.11.2
     dev: false
 
   /thenify-all@1.6.0:
@@ -12600,6 +12632,11 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
+  /word@0.3.0:
+    resolution: {integrity: sha512-OELeY0Q61OXpdUfTp+oweA/vtLVg5VDOXh+3he3PNzLGG/y0oylSOC1xRVj0+l4vQ3tj/bB1HVHv1ocXkQceFA==}
+    engines: {node: '>=0.8'}
+    dev: false
+
   /wordwrap@0.0.3:
     resolution: {integrity: sha512-1tMA907+V4QmxV7dbRvb4/8MaRALK6q9Abid3ndMYnbyo8piisCmeONVqVSXqQA3KaP4SLt5b7ud6E2sqP8TFw==}
     engines: {node: '>=0.4.0'}
@@ -12915,7 +12952,7 @@ packages:
     dev: false
 
   github.com/openfn/language-common/b8047f82680d95387cbe4596f55e24e4d0b128c6:
-    resolution: {tarball: https://codeload.github.com/openfn/language-common/tar.gz/b8047f82680d95387cbe4596f55e24e4d0b128c6}
+    resolution: {commit: b8047f82680d95387cbe4596f55e24e4d0b128c6, repo: git+ssh://git@github.com/openfn/language-common.git, type: git}
     name: language-common
     version: 0.3.0
     dependencies:
@@ -12924,7 +12961,7 @@ packages:
     dev: false
 
   github.com/openfn/language-http/2c7196a9369ea86afe53230771843c7c09bd3c3d:
-    resolution: {tarball: https://codeload.github.com/openfn/language-http/tar.gz/2c7196a9369ea86afe53230771843c7c09bd3c3d}
+    resolution: {commit: 2c7196a9369ea86afe53230771843c7c09bd3c3d, repo: git+ssh://git@github.com/openfn/language-http.git, type: git}
     name: language-http
     version: 2.4.12
     dependencies:
