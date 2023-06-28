@@ -4,10 +4,30 @@ import {
   expandReferences,
 } from "@openfn/language-common";
 
-import { Odoo } from "odoo";
-import { Log } from "./Utils";
+import pkg from "odoo";
+const { Odoo } = pkg;
 
 var sppConnector = null;
+
+
+export class Log {
+  static info(message) {
+    return console.info(`ℹ `, message);
+  }
+
+  static success(message) {
+    return console.info(`✓ Success at ${new Date()}:\n∟`, message);
+  }
+
+  static warn(message) {
+    return console.warn(`⚠ Warning at ${new Date()}:\n∟`, message);
+  }
+
+  static error(message) {
+    return console.error(`✗ Error at ${new Date()}:\n∟`, message);
+  }
+}
+
 
 /**
  * Execute a sequence of operations.
@@ -60,16 +80,16 @@ function login(state) {
 }
 
 /**
- * get household information from OpenSPP
+ * get group information from OpenSPP
  * @public
  * @example
- * getHousehold("6410000117")
+ * getGroup("GRP_Q4VGGZPF")
  * @function
- * @param {string} householdName - The name of the household
+ * @param {string} registrant_id - The registrant_id of the group
  * @param {function} callback - An optional callback function
  * @returns {Operation}
  */
-export function getHousehold(householdName, callback=false) {
+export function getGroup(registrant_id, callback=false) {
   if (sppConnector === null) {
     login(state);
   }
@@ -77,25 +97,27 @@ export function getHousehold(householdName, callback=false) {
     let defaultDomain = [
       ["is_registrant", "=", true],
       ["is_group", "=", true],
-      ["name", "=", householdName]
+      ["registrant_id", "=", registrant_id]
     ];
     let defaultOrder = "id desc";
-    let defaultFields = [];
+    let defaultFields = [
+      "name", "address", "phone", "kind", "registration_date", "registrant_id"
+    ];
     let options = {
       domain: defaultDomain,
       limit: 1,
       order: defaultOrder,
       fields: defaultFields
     };
-    sppConnector.search_read("res.partner", options, (err, household) => {
+    sppConnector.search_read("res.partner", options, (err, group) => {
       if (err) {
-        Log.error(err);
+        return Log.error(err);
       }
-      if (!household) {
-        return Log.warn(`Household ${householdName} not found!`);
+      if (!group) {
+        return Log.warn(`Group ${registrant_id} not found!`);
       }
-      Log.info(`Household ${householdName} found!`);
-      let nextState = composeNextState(state, household);
+      Log.info(`Group ${registrant_id} found!`);
+      let nextState = composeNextState(state, group);
       if (callback) {
         return callback(nextState);
       }
@@ -105,16 +127,16 @@ export function getHousehold(householdName, callback=false) {
 };
 
 /**
- * get household information from OpenSPP
+ * get individual information from OpenSPP
  * @public
  * @example
- * getHouseholdById(641)
+ * getIndividual("IND_Q4VGGZPF")
  * @function
- * @param {string} householdId - The id of the household
+ * @param {string} registrant_id - The registrant_id of the individual
  * @param {function} callback - An optional callback function
  * @returns {Operation}
  */
-export function getHouseholdById(householdId, callback=false) {
+export function getIndividual(registrant_id, callback=false) {
   if (sppConnector === null) {
     login(state);
   }
@@ -122,25 +144,28 @@ export function getHouseholdById(householdId, callback=false) {
     let defaultDomain = [
       ["is_registrant", "=", true],
       ["is_group", "=", true],
-      ["id", "=", householdId]
+      ["registrant_id", "=", registrant_id]
     ];
     let defaultOrder = "id desc";
-    let defaultFields = [];
+    let defaultFields = [
+      "name", "address", "phone", "registrant_id",
+      "gender", "email", "category_id", "birthdate",
+    ];
     let options = {
       domain: defaultDomain,
       limit: 1,
       order: defaultOrder,
       fields: defaultFields
     };
-    sppConnector.search_read("res.partner", options, (err, household) => {
+    sppConnector.search_read("res.partner", options, (err, individual) => {
       if (err) {
-        Log.error(err);
+        return Log.error(err);
       }
-      if (!household) {
-        return Log.warn(`Household with id=${householdId} not found!`);
+      if (!individual) {
+        return Log.warn(`Individual with id=${registrant_id} not found!`);
       }
-      Log.info(`Household with id=${householdId} found!`);
-      let nextState = composeNextState(state, household);
+      Log.info(`Individual with id=${registrant_id} found!`);
+      let nextState = composeNextState(state, individual);
       if (callback) {
         return callback(nextState);
       }
@@ -150,24 +175,24 @@ export function getHouseholdById(householdId, callback=false) {
 };
 
 /**
- * get household members information from OpenSPP
+ * get group members information from OpenSPP
  * @public
  * @example
- * getHouseholdMembers("6410000117")
+ * getGroupMembers("GRP_Q4VGGZPF")
  * @function
- * @param {string} householdName - The name of the household
+ * @param {string} registrant_id - The name of the group
  * @param {number} [offset=0] - Offset searching
  * @param {function} callback - An optional callback function
  * @returns {Operation}
  */
-export function getHouseholdMembers(householdName, offset=0, callback=false) {
+export function getGroupMembers(registrant_id, offset=0, callback=false) {
   if (sppConnector === null) {
     login(state);
   }
   return state => {
     let defaultDomain = [
       ["is_ended", "=", false],
-      ["group.name", "=", householdName]
+      ["group.registrant_id", "=", registrant_id]
     ];
     let defaultFields = [
       "individual", "kind", "start_date", "ended_date",
@@ -183,12 +208,12 @@ export function getHouseholdMembers(householdName, offset=0, callback=false) {
     }
     sppConnector.search_read("g2p.group.membership", options, (err, members) => {
       if (err) {
-        Log.error(err);
+        return Log.error(err);
       }
       if (!members) {
-        return Log.warn(`Household ${householdName} not found or not having members!`)
+        return Log.warn(`Household ${registrant_id} not found or not having members!`)
       }
-      Log.info(`Household ${householdName} members found!`);
+      Log.info(`Household ${registrant_id} members found!`);
       let nextState = composeNextState(state, members);
       if (callback) {
         return callback(nextState);
@@ -199,24 +224,25 @@ export function getHouseholdMembers(householdName, offset=0, callback=false) {
 };
 
 /**
- * get agents information from OpenSPP
+ * get service points information from OpenSPP
  * @public
  * @example
- * getAgentsByNumber("000117")
+ * getServicePoint("000117")
  * @function
- * @param {string} agentNumber - The number of the agent
+ * @param {string} name - The number of the agent
  * @param {number} [offset=0] - Offset searching
  * @param {function} callback - An optional callback function
  * @returns {Operation}
  */
-export function getAgentsByNumber(agentNumber, offset=0, callback=false) {
+export function getServicePoint(name, offset=0, callback=false) {
   if (sppConnector === null) {
     login(state);
   }
   return state => {
-    let defaultDomain = [["agent_number", "=", agentNumber]];
+    let defaultDomain = [["name", "=", name]];
     let defaultFields = [
-      "name", "area_id", "service_type_ids", "phone_sanitized", "shop_address"
+      "name", "area_id", "service_type_ids", "phone_sanitized",
+      "shop_address", "is_contract_active", "is_disabled"
     ];
     let options = {
       domain: defaultDomain,
@@ -228,12 +254,12 @@ export function getAgentsByNumber(agentNumber, offset=0, callback=false) {
     }
     sppConnector.search_read("spp.service.point", options, (err, agents) => {
       if (err) {
-        Log.error(err);
+        return Log.error(err);
       }
       if (!agents) {
-        return Log.warn(`Agent ${agentNumber} not found!`)
+        return Log.warn(`Agent ${name} not found!`)
       }
-      Log.info(`Agent ${agentNumber} found!`);
+      Log.info(`Agent ${name} found!`);
       let nextState = composeNextState(state, agents);
       if (callback) {
         return callback(nextState);
@@ -243,7 +269,261 @@ export function getAgentsByNumber(agentNumber, offset=0, callback=false) {
   }
 };
 
-export { Log } from "./Utils";
+/**
+ * get groups from OpenSPP
+ * @public
+ * @example
+ * searchGroup([["registrant_id", "=", "GRP_Q4VGGZPF"]])
+ * @function
+ * @param {string} domain - searching domain
+ * @param {number} [offset=0] - Offset searching
+ * @param {function} callback - An optional callback function
+ * @returns {Operation}
+ */
+export function searchGroup(domain, offset=0, callback=false) {
+  if (sppConnector === null) {
+    login(state);
+  }
+  return state => {
+    let defaultDomain = [
+      ["is_registrant", "=", true],
+      ["is_group", "=", true],
+    ];
+    let defaultOrder = "id desc";
+    let defaultFields = ["name", "registrant_id"];
+    let isDomain = true;
+    for (const element of domain) {
+      if (!Array.isArray(element)) {
+        isDomain = false;
+        break;
+      }
+    }
+    if (!isDomain) {
+      domain = [domain];
+    }
+    let finalDomain = [...domain, ...defaultDomain];
+    let options = {
+      domain: finalDomain,
+      limit: 100,
+      offset: offset,
+      order: defaultOrder,
+      fields: defaultFields
+    };
+    sppConnector.search_read("res.partner", options, (err, groups) => {
+      if (err) {
+        return Log.error(err);
+      }
+      if (!groups) {
+        return Log.warn(`Group with domain=${domain} not found!`);
+      }
+      Log.info(`Group with domain=${domain} found!`);
+      let nextState = composeNextState(state, groups);
+      if (callback) {
+        return callback(nextState);
+      }
+      return nextState;
+    });
+  }
+}
+
+/**
+ * get individuals from OpenSPP
+ * @public
+ * @example
+ * searchIndividual([["registrant_id", "=", "IND_Q4VGGZPF"]])
+ * @function
+ * @param {string} domain - searching domain
+ * @param {number} [offset=0] - Offset searching
+ * @param {function} callback - An optional callback function
+ * @returns {Operation}
+ */
+export function searchIndividual(domain, offset=0, callback=false) {
+  if (sppConnector === null) {
+    login(state);
+  }
+  return state => {
+    let defaultDomain = [
+      ["is_registrant", "=", true],
+      ["is_group", "=", false],
+    ];
+    let defaultOrder = "id desc";
+    let defaultFields = ["name", "registrant_id"];
+    let isDomain = true;
+    for (const element of domain) {
+      if (!Array.isArray(element)) {
+        isDomain = false;
+        break;
+      }
+    }
+    if (!isDomain) {
+      domain = [domain];
+    }
+    let finalDomain = [...domain, ...defaultDomain];
+    let options = {
+      domain: finalDomain,
+      limit: 100,
+      offset: offset,
+      order: defaultOrder,
+      fields: defaultFields
+    };
+    sppConnector.search_read("res.partner", options, (err, individuals) => {
+      if (err) {
+        return Log.error(err);
+      }
+      if (!individuals) {
+        return Log.warn(`Individual with domain=${domain} not found!`);
+      }
+      Log.info(`Individual with domain=${domain} found!`);
+      let nextState = composeNextState(state, individuals);
+      if (callback) {
+        return callback(nextState);
+      }
+      return nextState;
+    });
+  }
+}
+
+/**
+ * get program information from OpenSPP
+ * @public
+ * @example
+ * getProgram("PROG_2023_00000001")
+ * @function
+ * @param {string} program_id - searching domain
+ * @param {function} callback - An optional callback function
+ * @returns {Operation}
+ */
+export function getProgram(program_id, callback=false) {
+  if (sppConnector === null) {
+    login(state);
+  }
+  return state => {
+    let defaultDomain = [["program_id", "=", program_id]];
+    let defaultFields = [
+      "name", "program_id", "eligible_beneficiaries_count",
+      "cycles_count", "state", "target_type"
+    ];
+    let options = {
+      domain: defaultDomain,
+      limit: 1,
+      fields: defaultFields
+    };
+    sppConnector.search_read("g2p.program", options, (err, program) => {
+      if (err) {
+        return Log.error(err);
+      }
+      if (!program) {
+        return Log.warn(`Program ${program_id} not found!`)
+      }
+      Log.info(`Program ${program_id} found!`);
+      let nextState = composeNextState(state, program);
+      if (callback) {
+        return callback(nextState);
+      }
+      return nextState;
+    })
+  }
+}
+
+/**
+ * get programs list from OpenSPP
+ * @public
+ * @example
+ * getPrograms(100)
+ * @function
+ * @param {number} [offset=0] - offset from start
+ * @param {function} callback - An optional callback function
+ * @returns {Operation}
+ */
+export function getPrograms(offset=0, callback=false) {
+  if (sppConnector === null) {
+    login(state);
+  }
+  return state => {
+    let defaultDomain = [];
+    let defaultFields = ["name", "program_id"];
+    let defaultOrder = "id";
+    let options = {
+      domain: defaultDomain,
+      limit: 100,
+      fields: defaultFields,
+      offset: offset,
+      order: defaultOrder,
+    };
+    sppConnector.search_read("g2p.program", options, (err, programs) => {
+      if (err) {
+        return Log.error(err);
+      }
+      if (!programs) {
+        return Log.warn("No program found!");
+      }
+      Log.info("Program(s) found!");
+      let nextState = composeNextState(state, programs);
+      if (callback) {
+        return callback(nextState);
+      }
+      return nextState;
+    });
+  };
+};
+
+/**
+ * get programs list from OpenSPP
+ * @public
+ * @example
+ * getEnrolledPrograms("IND_Q4VGGZPF")
+ * @function
+ * @param {string} registrant_id - registrant_id of group / individual wanted to search 
+ * @param {function} callback - An optional callback function
+ * @returns {Operation}
+ */
+export function getEnrolledPrograms(registrant_id, callback=false) {
+  if (sppConnector === null) {
+    login(state);
+  }
+  return state => {
+    let defaultDomain = [["partner_id.registrant_id", "=", registrant_id]];
+    let defaultFields = ["program_id"];
+    let programIds;
+    sppConnector.search_read(
+      "g2p.program_membership",
+      {
+        domain: defaultDomain,
+        fields: defaultFields,
+        limit: 500
+      },
+      (err, program_ids) => {
+        if (err) {
+          return Log.error(err);
+        }
+        if (!program_ids) {
+          return Log.warn("No enrolled program(s) found!");
+        }
+        Log.info("Enrolled program(s) found!");
+        programIds = program_ids;
+      }
+    );
+    if (programIds) {
+      sppConnector.search_read(
+        "g2p.program",
+        {
+          domain: [["id", "in", programIds]],
+          fields: defaultFields,
+          limit: programIds.length
+        },
+        (err, programs) => {
+          let nextState = composeNextState(state, programs);
+          if (callback) {
+            return callback(nextState);
+          }
+          return nextState;
+        }
+      );
+    }
+  };
+};
+
+
 
 // TODO: Decide which functions to publish from @openfn/language-common
 export {
