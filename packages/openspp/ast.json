@@ -7,7 +7,7 @@
         "callback"
       ],
       "docs": {
-        "description": "get household information from OpenSPP",
+        "description": "get group information from OpenSPP",
         "tags": [
           {
             "title": "public",
@@ -25,7 +25,7 @@
           },
           {
             "title": "param",
-            "description": "The name of the household",
+            "description": "The registrant_id of the group",
             "type": {
               "type": "NameExpression",
               "name": "string"
@@ -54,13 +54,13 @@
       "valid": true
     },
     {
-      "name": "getHouseholdById",
+      "name": "getIndividual",
       "params": [
-        "householdId",
+        "registrant_id",
         "callback"
       ],
       "docs": {
-        "description": "get household information from OpenSPP",
+        "description": "get individual information from OpenSPP",
         "tags": [
           {
             "title": "public",
@@ -69,7 +69,7 @@
           },
           {
             "title": "example",
-            "description": "getHouseholdById(641)"
+            "description": "getIndividual(\"IND_Q4VGGZPF\")"
           },
           {
             "title": "function",
@@ -78,12 +78,12 @@
           },
           {
             "title": "param",
-            "description": "The id of the household",
+            "description": "The registrant_id of the individual",
             "type": {
               "type": "NameExpression",
               "name": "string"
             },
-            "name": "householdId"
+            "name": "registrant_id"
           },
           {
             "title": "param",
@@ -107,14 +107,14 @@
       "valid": true
     },
     {
-      "name": "getHouseholdMembers",
+      "name": "getGroupMembers",
       "params": [
-        "householdName",
+        "registrant_id",
         "offset",
         "callback"
       ],
       "docs": {
-        "description": "get household members information from OpenSPP",
+        "description": "get group members information from OpenSPP",
         "tags": [
           {
             "title": "public",
@@ -123,7 +123,7 @@
           },
           {
             "title": "example",
-            "description": "getHouseholdMembers(\"6410000117\")"
+            "description": "getGroupMembers(\"GRP_Q4VGGZPF\")"
           },
           {
             "title": "function",
@@ -132,12 +132,12 @@
           },
           {
             "title": "param",
-            "description": "The name of the household",
+            "description": "The name of the group",
             "type": {
               "type": "NameExpression",
               "name": "string"
             },
-            "name": "householdName"
+            "name": "registrant_id"
           },
           {
             "title": "param",
@@ -174,14 +174,14 @@
       "valid": true
     },
     {
-      "name": "getAgentsByNumber",
+      "name": "getServicePoint",
       "params": [
-        "agentNumber",
+        "name",
         "offset",
         "callback"
       ],
       "docs": {
-        "description": "get agents information from OpenSPP",
+        "description": "get service points information from OpenSPP",
         "tags": [
           {
             "title": "public",
@@ -190,7 +190,7 @@
           },
           {
             "title": "example",
-            "description": "getAgentsByNumber(\"000117\")"
+            "description": "getServicePoint(\"000117\")"
           },
           {
             "title": "function",
@@ -204,7 +204,7 @@
               "type": "NameExpression",
               "name": "string"
             },
-            "name": "agentNumber"
+            "name": "name"
           },
           {
             "title": "param",
@@ -235,6 +235,413 @@
               "type": "NameExpression",
               "name": "Operation"
             }
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "searchGroup",
+      "params": [
+        "domain",
+        "offset",
+        "callback"
+      ],
+      "docs": {
+        "description": "get groups from OpenSPP",
+        "tags": [
+          {
+            "title": "public",
+            "description": null,
+            "type": null
+          },
+          {
+            "title": "example",
+            "description": "searchGroup([[\"registrant_id\", \"=\", \"GRP_Q4VGGZPF\"]])"
+          },
+          {
+            "title": "function",
+            "description": null,
+            "name": null
+          },
+          {
+            "title": "param",
+            "description": "searching domain",
+            "type": {
+              "type": "NameExpression",
+              "name": "string"
+            },
+            "name": "domain"
+          },
+          {
+            "title": "param",
+            "description": "Offset searching",
+            "type": {
+              "type": "OptionalType",
+              "expression": {
+                "type": "NameExpression",
+                "name": "number"
+              }
+            },
+            "name": "offset",
+            "default": "0"
+          },
+          {
+            "title": "param",
+            "description": "An optional callback function",
+            "type": {
+              "type": "NameExpression",
+              "name": "function"
+            },
+            "name": "callback"
+          },
+          {
+            "title": "returns",
+            "description": null,
+            "type": {
+              "type": "NameExpression",
+              "name": "Operation"
+            }
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "searchIndividual",
+      "params": [
+        "domain",
+        "offset",
+        "callback"
+      ],
+      "docs": {
+        "description": "get individuals from OpenSPP",
+        "tags": [
+          {
+            "title": "public",
+            "description": null,
+            "type": null
+          },
+          {
+            "title": "example",
+            "description": "searchIndividual([[\"registrant_id\", \"=\", \"IND_Q4VGGZPF\"]])"
+          },
+          {
+            "title": "function",
+            "description": null,
+            "name": null
+          },
+          {
+            "title": "param",
+            "description": "searching domain",
+            "type": {
+              "type": "NameExpression",
+              "name": "string"
+            },
+            "name": "domain"
+          },
+          {
+            "title": "param",
+            "description": "Offset searching",
+            "type": {
+              "type": "OptionalType",
+              "expression": {
+                "type": "NameExpression",
+                "name": "number"
+              }
+            },
+            "name": "offset",
+            "default": "0"
+          },
+          {
+            "title": "param",
+            "description": "An optional callback function",
+            "type": {
+              "type": "NameExpression",
+              "name": "function"
+            },
+            "name": "callback"
+          },
+          {
+            "title": "returns",
+            "description": null,
+            "type": {
+              "type": "NameExpression",
+              "name": "Operation"
+            }
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "getProgram",
+      "params": [
+        "program_id",
+        "callback"
+      ],
+      "docs": {
+        "description": "get program information from OpenSPP",
+        "tags": [
+          {
+            "title": "public",
+            "description": null,
+            "type": null
+          },
+          {
+            "title": "example",
+            "description": "getProgram(\"PROG_2023_00000001\")"
+          },
+          {
+            "title": "function",
+            "description": null,
+            "name": null
+          },
+          {
+            "title": "param",
+            "description": "searching domain",
+            "type": {
+              "type": "NameExpression",
+              "name": "string"
+            },
+            "name": "program_id"
+          },
+          {
+            "title": "param",
+            "description": "An optional callback function",
+            "type": {
+              "type": "NameExpression",
+              "name": "function"
+            },
+            "name": "callback"
+          },
+          {
+            "title": "returns",
+            "description": null,
+            "type": {
+              "type": "NameExpression",
+              "name": "Operation"
+            }
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "getPrograms",
+      "params": [
+        "offset",
+        "callback"
+      ],
+      "docs": {
+        "description": "get programs list from OpenSPP",
+        "tags": [
+          {
+            "title": "public",
+            "description": null,
+            "type": null
+          },
+          {
+            "title": "example",
+            "description": "getPrograms(100)"
+          },
+          {
+            "title": "function",
+            "description": null,
+            "name": null
+          },
+          {
+            "title": "param",
+            "description": "offset from start",
+            "type": {
+              "type": "OptionalType",
+              "expression": {
+                "type": "NameExpression",
+                "name": "number"
+              }
+            },
+            "name": "offset",
+            "default": "0"
+          },
+          {
+            "title": "param",
+            "description": "An optional callback function",
+            "type": {
+              "type": "NameExpression",
+              "name": "function"
+            },
+            "name": "callback"
+          },
+          {
+            "title": "returns",
+            "description": null,
+            "type": {
+              "type": "NameExpression",
+              "name": "Operation"
+            }
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "getEnrolledPrograms",
+      "params": [
+        "registrant_id",
+        "callback"
+      ],
+      "docs": {
+        "description": "get programs list from OpenSPP",
+        "tags": [
+          {
+            "title": "public",
+            "description": null,
+            "type": null
+          },
+          {
+            "title": "example",
+            "description": "getEnrolledPrograms(\"IND_Q4VGGZPF\")"
+          },
+          {
+            "title": "function",
+            "description": null,
+            "name": null
+          },
+          {
+            "title": "param",
+            "description": "registrant_id of group / individual wanted to search",
+            "type": {
+              "type": "NameExpression",
+              "name": "string"
+            },
+            "name": "registrant_id"
+          },
+          {
+            "title": "param",
+            "description": "An optional callback function",
+            "type": {
+              "type": "NameExpression",
+              "name": "function"
+            },
+            "name": "callback"
+          },
+          {
+            "title": "returns",
+            "description": null,
+            "type": {
+              "type": "NameExpression",
+              "name": "Operation"
+            }
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "enroll",
+      "params": [
+        "registrant_id",
+        "program_id",
+        "callback"
+      ],
+      "docs": {
+        "description": "enroll registrant to program from OpenSPP",
+        "tags": [
+          {
+            "title": "public",
+            "description": null,
+            "type": null
+          },
+          {
+            "title": "example",
+            "description": "enroll(\"IND_Q4VGGZPF\", \"PROG_2023_00000001\")"
+          },
+          {
+            "title": "function",
+            "description": null,
+            "name": null
+          },
+          {
+            "title": "param",
+            "description": "registrant_id of group / individual wanted to enroll",
+            "type": {
+              "type": "NameExpression",
+              "name": "string"
+            },
+            "name": "registrant_id"
+          },
+          {
+            "title": "param",
+            "description": "program_id of program",
+            "type": {
+              "type": "NameExpression",
+              "name": "string"
+            },
+            "name": "program_id"
+          },
+          {
+            "title": "param",
+            "description": "An optional callback function",
+            "type": {
+              "type": "NameExpression",
+              "name": "function"
+            },
+            "name": "callback"
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "unenroll",
+      "params": [
+        "registrant_id",
+        "program_id",
+        "callback"
+      ],
+      "docs": {
+        "description": "unenroll registrant from program from OpenSPP",
+        "tags": [
+          {
+            "title": "public",
+            "description": null,
+            "type": null
+          },
+          {
+            "title": "example",
+            "description": "unenroll(\"IND_Q4VGGZPF\", \"PROG_2023_00000001\")"
+          },
+          {
+            "title": "function",
+            "description": null,
+            "name": null
+          },
+          {
+            "title": "param",
+            "description": "registrant_id of group / individual wanted to unenroll",
+            "type": {
+              "type": "NameExpression",
+              "name": "string"
+            },
+            "name": "registrant_id"
+          },
+          {
+            "title": "param",
+            "description": "program_id of program",
+            "type": {
+              "type": "NameExpression",
+              "name": "string"
+            },
+            "name": "program_id"
+          },
+          {
+            "title": "param",
+            "description": "An optional callback function",
+            "type": {
+              "type": "NameExpression",
+              "name": "function"
+            },
+            "name": "callback"
           }
         ]
       },

@@ -80,6 +80,63 @@ function login(state) {
 }
 
 /**
+ * Create a brand new program membership for registrant.
+ * @example
+ *  _creatingEnrolledRegistrantToProgram("IND_Q4VGGZPF", "PROG_2023_00000001")
+ * @private
+ * @param {string} registrant_id - registrant_id of group / individual wanted to unenroll 
+ * @param {string} program_id - program_id of program 
+ */
+function _creatingEnrolledRegistrantToProgram(registrant_id, program_id) {
+  if (sppConnector === null) {
+    login(state);
+  }
+  let registrant;
+  let program;
+  sppConnector.search_read(
+    "res.partner",
+    {
+      domain: [["is_registrant", "=", true], ["registrant_id", "=", registrant_id]],
+      limit: 1,
+      fields: ["id"],
+    },
+    (err, res) => {
+      if (err) {
+        Log.error(err);
+      }
+      registrant = res;
+    }
+  );
+  sppConnector.search_read(
+    "g2p.program",
+    {
+      domain: [["program_id", "=", program_id]],
+      limit: 1,
+      fields: ["id"],
+    },
+    (err, res) => {
+      if (err) {
+        Log.error(err);
+      }
+      program = res;
+    }
+  );
+  if (!registrant || !program) {
+    return Log.error("Registrant or Program not exists!");
+  }
+  let registrantId = registrant[0].id;
+  let programId = program[0].id;
+  sppConnector.create(
+    "g2p.program_membership",
+    {
+      program_id: programId,
+      partner_id: registrantId,
+      state: "enrolled",
+    }
+  );
+};
+
+/**
  * get group information from OpenSPP
  * @public
  * @example
@@ -484,7 +541,6 @@ export function getEnrolledPrograms(registrant_id, callback=false) {
   return state => {
     let defaultDomain = [["partner_id.registrant_id", "=", registrant_id]];
     let defaultFields = ["program_id"];
-    let programIds;
     sppConnector.search_read(
       "g2p.program_membership",
       {
@@ -500,30 +556,133 @@ export function getEnrolledPrograms(registrant_id, callback=false) {
           return Log.warn("No enrolled program(s) found!");
         }
         Log.info("Enrolled program(s) found!");
-        programIds = program_ids;
+        sppConnector.search_read(
+          "g2p.program",
+          {
+            domain: [["id", "in", program_ids]],
+            fields: defaultFields,
+            limit: program_ids.length
+          },
+          (err, programs) => {
+            let nextState = composeNextState(state, programs);
+            if (callback) {
+              return callback(nextState);
+            }
+            return nextState;
+          }
+        );
       }
     );
-    if (programIds) {
-      sppConnector.search_read(
-        "g2p.program",
-        {
-          domain: [["id", "in", programIds]],
-          fields: defaultFields,
-          limit: programIds.length
-        },
-        (err, programs) => {
-          let nextState = composeNextState(state, programs);
-          if (callback) {
-            return callback(nextState);
-          }
-          return nextState;
-        }
-      );
-    }
   };
 };
 
+/**
+ * enroll registrant to program from OpenSPP
+ * @public
+ * @example
+ * enroll("IND_Q4VGGZPF", "PROG_2023_00000001")
+ * @function
+ * @param {string} registrant_id - registrant_id of group / individual wanted to enroll 
+ * @param {string} program_id - program_id of program 
+ * @param {function} callback - An optional callback function
+ */
+export function enroll(registrant_id, program_id, callback=false) {
+  if (sppConnector === null) {
+    login(state);
+  }
+  return state => {
+    let domain = [
+      ["partner_id.registrant_id", "=", registrant_id],
+      ["program_id.program_id", "=", program_id],
+    ];
+    let fields = ["partner_id", "program_id", "state"];
+    sppConnector.search_read(
+      "g2p.program_membership",
+      {
+        domain: domain,
+        limit: 1,
+        fields: fields,
+      },
+      (err, result) => {
+        if (err) {
+          return Log.error(err);
+        }
+        if (Array.isArray(result) && result.length > 0) {
+          let membership = result[0];
+          if (membership.state === "enrolled") {
+            return Log.info(`Registrant ${registrant_id} enrolled into Program ${program_id}`);
+          } else {
+            sppConnector.update(
+              model="g2p.program_membership",
+              id=membership.id,
+              params={state: "enrolled"},
+              (err, result) => {
+                if (err) {
+                  return Log.error(err);
+                }
+                return Log.info(`Registrant ${registrant_id} enrolled into Program ${program_id}`);
+              }
+            );
+          }
+        } else {
+          Log.info("Please waiting to create program membership");
+          return _creatingEnrolledRegistrantToProgram(registrant_id, program_id);
+        }
+      }
+    );
+  };
+};
 
+/**
+ * unenroll registrant from program from OpenSPP
+ * @public
+ * @example
+ * unenroll("IND_Q4VGGZPF", "PROG_2023_00000001")
+ * @function
+ * @param {string} registrant_id - registrant_id of group / individual wanted to unenroll 
+ * @param {string} program_id - program_id of program 
+ * @param {function} callback - An optional callback function
+ */
+export function unenroll(registrant_id, program_id, callback=false) {
+  if (sppConnector === null) {
+    login(state);
+  }
+  return state => {
+    let domain = [
+      ["partner_id.registrant_id", "=", registrant_id],
+      ["program_id.program_id", "=", program_id],
+    ];
+    let fields = ["partner_id", "program_id", "state"];
+    sppConnector.search_read(
+      "g2p.program_membership",
+      {
+        domain: domain,
+        fields: fields,
+        limit: 1
+      },
+      (err, result) => {
+        if (err) {
+          Log.error(err);
+        }
+        if ((Array.isArray(result) && result.length === 0) || result[0].state !== "enrolled") {
+          Log.info(`Registrant ${registrant_id} is not enrolled into Program ${program_id}`);
+        } else {
+          sppConnector.update(
+            model="g2p.program_membership",
+            id=membership.id,
+            params={state: "not_eligible"},
+            (err, result) => {
+              if (err) {
+                return Log.error(err);
+              }
+              return Log.info(`Registrant ${registrant_id} enrolled into Program ${program_id}`);
+            }
+          );
+        }
+      }
+    );
+  };
+};
 
 // TODO: Decide which functions to publish from @openfn/language-common
 export {
