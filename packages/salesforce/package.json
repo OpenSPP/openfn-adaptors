@@ -33,7 +33,7 @@
   "dependencies": {
     "@openfn/language-common": "workspace:*",
     "axios": "^0.21.4",
-    "jsforce": "^1.11.1",
+    "jsforce": "^3.1.0",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
