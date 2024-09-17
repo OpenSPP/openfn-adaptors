@@ -1,6 +1,6 @@
 {
   "name": "@openfn/language-facebook",
-  "version": "0.3.2",
+  "version": "0.4.2",
   "description": "An Language Package for Facebook Messenger API",
   "main": "dist/index.cjs",
   "scripts": {
@@ -20,11 +20,10 @@
     "configuration-schema.json"
   ],
   "dependencies": {
-    "@openfn/language-common": "^1.10.0",
+    "@openfn/language-common": "workspace:*",
     "request": "^2.88.2"
   },
   "devDependencies": {
-    "@openfn/buildtools": "workspace:^1.0.2",
     "@openfn/simple-ast": "0.4.1",
     "assertion-error": "^2.0.0",
     "chai": "^4.3.7",
@@ -43,6 +42,7 @@
   "exports": {
     ".": {
       "import": "./dist/index.js",
+      "types": "./types/index.d.ts",
       "require": "./dist/index.cjs"
     },
     "./package.json": "./package.json"

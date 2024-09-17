@@ -1,13 +1,14 @@
 {
   "operations": [
     {
-      "name": "submitXls",
+      "name": "get",
       "params": [
-        "formData",
-        "params"
+        "path",
+        "params",
+        "callback"
       ],
       "docs": {
-        "description": "Convert form data to xls then submit.",
+        "description": "Make a GET request to any CommCare endpoint. The response body will be returned to `state.data` as JSON.\nPaginated responses will be fully downloaded and returned as a single array, _unless_ an `offset` is passed.",
         "tags": [
           {
             "title": "public",
@@ -15,8 +16,94 @@
             "type": null
           },
           {
+            "title": "function",
+            "description": null,
+            "name": null
+          },
+          {
             "title": "example",
-            "description": "submitXls(\n   [\n     {name: 'Mamadou', phone: '000000'},\n   ],\n   {\n     case_type: 'student',\n     search_field: 'external_id',\n     create_new_cases: 'on',\n   }\n)"
+            "description": "get(\"/case/12345\")",
+            "caption": "Get a specific case by id"
+          },
+          {
+            "title": "example",
+            "description": "get(\"/case\", { offset:0, limit: 20 })",
+            "caption": "Get exactly 20 cases"
+          },
+          {
+            "title": "example",
+            "description": "get(\"/form\", { app_id: \"02bf50ab803a89ea4963799362874f0c\" })",
+            "caption": "Get forms by app id"
+          },
+          {
+            "title": "example",
+            "description": "get(\"/case\", {}, (state) => {\n   state.cases.push(...state.data) // adds 50 cases to the cases array\n   return state;\n})",
+            "caption": "Get all cases, 50 at a time, and add them to state"
+          },
+          {
+            "title": "param",
+            "description": "Path to resource",
+            "type": {
+              "type": "NameExpression",
+              "name": "string"
+            },
+            "name": "path"
+          },
+          {
+            "title": "param",
+            "description": "Input parameters for the request. These vary by endpoint,  see {@link https://dimagi.atlassian.net/wiki/spaces/commcarepublic/pages/2143957366/Data+APIs CommCare docs}.",
+            "type": {
+              "type": "OptionalType",
+              "expression": {
+                "type": "NameExpression",
+                "name": "Object"
+              }
+            },
+            "name": "params"
+          },
+          {
+            "title": "param",
+            "description": "Optional callback function. Invoked once per page of data retrieved.",
+            "type": {
+              "type": "OptionalType",
+              "expression": {
+                "type": "NameExpression",
+                "name": "function"
+              }
+            },
+            "name": "callback"
+          },
+          {
+            "title": "state",
+            "description": "{CommcareHttpState}"
+          },
+          {
+            "title": "returns",
+            "description": null,
+            "type": {
+              "type": "NameExpression",
+              "name": "Operation"
+            }
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "post",
+      "params": [
+        "path",
+        "data",
+        "params",
+        "callback"
+      ],
+      "docs": {
+        "description": "Make a POST request to any CommCare endpoint.",
+        "tags": [
+          {
+            "title": "example",
+            "description": "post(\"/user\", { \"username\":\"test\", \"password\":\"somepassword\" })",
+            "caption": "Post a user object to to the /user endpoint"
           },
           {
             "title": "function",
@@ -24,22 +111,113 @@
             "name": null
           },
           {
-            "title": "param",
-            "description": "Object including form data.",
-            "type": {
-              "type": "NameExpression",
-              "name": "Object"
-            },
-            "name": "formData"
+            "title": "public",
+            "description": null,
+            "type": null
           },
           {
             "title": "param",
-            "description": "Request params including case type and external id.",
+            "description": "Path to resource",
+            "type": {
+              "type": "NameExpression",
+              "name": "string"
+            },
+            "name": "path"
+          },
+          {
+            "title": "param",
+            "description": "Object or JSON to use as the request body",
+            "type": {
+              "type": "NameExpression",
+              "name": "object"
+            },
+            "name": "data"
+          },
+          {
+            "title": "param",
+            "description": "Optional request params",
+            "type": {
+              "type": "OptionalType",
+              "expression": {
+                "type": "NameExpression",
+                "name": "Object"
+              }
+            },
+            "name": "params"
+          },
+          {
+            "title": "param",
+            "description": "Optional callback to handle the response",
+            "type": {
+              "type": "OptionalType",
+              "expression": {
+                "type": "NameExpression",
+                "name": "function"
+              }
+            },
+            "name": "callback"
+          },
+          {
+            "title": "returns",
+            "description": null,
+            "type": {
+              "type": "NameExpression",
+              "name": "Operation"
+            }
+          },
+          {
+            "title": "state",
+            "description": "{CommcareHttpState}"
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "submitXls",
+      "params": [
+        "data",
+        "params"
+      ],
+      "docs": {
+        "description": "Bulk upload data to CommCare. Accepts an array of objects, converts them into\nan XLS representation, and uploads.",
+        "tags": [
+          {
+            "title": "public",
+            "description": null,
+            "type": null
+          },
+          {
+            "title": "function",
+            "description": null,
+            "name": null
+          },
+          {
+            "title": "example",
+            "description": "submitXls(\n   [\n     {name: 'Mamadou', phone: '000000'},\n   ],\n   {\n     case_type: 'student',\n     search_field: 'external_id',\n     create_new_cases: 'on',\n   }\n)",
+            "caption": "Upload a single row of data"
+          },
+          {
+            "title": "param",
+            "description": "Array of objects to upload",
+            "type": {
+              "type": "NameExpression",
+              "name": "array"
+            },
+            "name": "data"
+          },
+          {
+            "title": "param",
+            "description": "Input parameters, see {@link https://dimagi.atlassian.net/wiki/spaces/commcarepublic/pages/2143946459/Bulk+Upload+Case+Data CommCare docs}.",
             "type": {
               "type": "NameExpression",
               "name": "Object"
             },
             "name": "params"
+          },
+          {
+            "title": "state",
+            "description": "data - the response from the CommCare Server"
           },
           {
             "title": "returns",
@@ -56,10 +234,10 @@
     {
       "name": "submit",
       "params": [
-        "formData"
+        "data"
       ],
       "docs": {
-        "description": "Submit form data",
+        "description": "Submit forms to CommCare. Accepts an array of JSON\nobjects, converts them into XML, and submits to CommCare as an x-form.",
         "tags": [
           {
             "title": "public",
@@ -67,22 +245,27 @@
             "type": null
           },
           {
-            "title": "example",
-            "description": "submit(\n   fields(\n     field(\"@\", function(state) {\n       return {\n         \"xmlns\": \"http://openrosa.org/formdesigner/form-id-here\"\n       };\n     }),\n     field(\"question1\", dataValue(\"answer1\")),\n     field(\"question2\", \"Some answer here.\")\n   )\n )"
-          },
-          {
             "title": "function",
             "description": null,
             "name": null
           },
           {
+            "title": "example",
+            "description": "submit(\n   fields(\n     field(\"@\", (state) => ({\n         \"xmlns\": `http://openrosa.org/formdesigner/${state.formId}`\n     }),\n     field(\"question1\", (state) => state.data.answer1),\n     field(\"question2\", (state) => state.data.answer2),\n   )\n )",
+            "caption": "Submit a form to CommCare"
+          },
+          {
             "title": "param",
-            "description": "Object including form data.",
+            "description": "The form as a JSON object",
             "type": {
               "type": "NameExpression",
               "name": "Object"
             },
-            "name": "formData"
+            "name": "data"
+          },
+          {
+            "title": "state",
+            "description": "data - the response from the CommCare Server"
           },
           {
             "title": "returns",
@@ -104,7 +287,7 @@
         "postUrl"
       ],
       "docs": {
-        "description": "Make a GET request to CommCare's Reports API\nand POST the response to somewhere else.",
+        "description": "Make a GET request to CommCare's Reports API\nand POST the response somewhere else.",
         "tags": [
           {
             "title": "public",
@@ -113,7 +296,8 @@
           },
           {
             "title": "example",
-            "description": "fetchReportData(reportId, params, postUrl)"
+            "description": "fetchReportData(\n  \"9aab0eeb88555a7b4568676883e7379a\",\n  { limit: 10 },\n  \"https://www.example.com/api/\"\n)",
+            "caption": "Fetch 10 records from a report and post them to example.com"
           },
           {
             "title": "function",
@@ -131,7 +315,7 @@
           },
           {
             "title": "param",
-            "description": "Query params, incl: limit, offset, and custom report filters.",
+            "description": "Input parameters for the request, see {@link https://dimagi.atlassian.net/wiki/spaces/commcarepublic/pages/2143957341/Download+Report+Data Commcare docs}.",
             "type": {
               "type": "NameExpression",
               "name": "Object"
@@ -140,7 +324,7 @@
           },
           {
             "title": "param",
-            "description": "Url to which the response object will be posted.",
+            "description": "URL to which the response object will be posted.",
             "type": {
               "type": "NameExpression",
               "name": "String"
@@ -176,13 +360,13 @@
             "type": null
           },
           {
-            "title": "example",
-            "description": "fn(state => {\n  // do some things to state\n  return state;\n});"
-          },
-          {
             "title": "function",
             "description": null,
             "name": null
+          },
+          {
+            "title": "example",
+            "description": "fn(state => {\n  // do some things to state\n  return state;\n});"
           },
           {
             "title": "param",
@@ -192,6 +376,59 @@
               "name": "Function"
             },
             "name": "func"
+          },
+          {
+            "title": "returns",
+            "description": null,
+            "type": {
+              "type": "NameExpression",
+              "name": "Operation"
+            }
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "fnIf",
+      "params": [
+        "condition",
+        "operation"
+      ],
+      "docs": {
+        "description": "A custom operation that will only execute the function if the condition returns true",
+        "tags": [
+          {
+            "title": "public",
+            "description": null,
+            "type": null
+          },
+          {
+            "title": "function",
+            "description": null,
+            "name": null
+          },
+          {
+            "title": "example",
+            "description": "fnIf((state) => state?.data?.name, get(\"https://example.com\"));"
+          },
+          {
+            "title": "param",
+            "description": "The condition that returns true",
+            "type": {
+              "type": "NameExpression",
+              "name": "Boolean"
+            },
+            "name": "condition"
+          },
+          {
+            "title": "param",
+            "description": "The operation needed to be executed.",
+            "type": {
+              "type": "NameExpression",
+              "name": "Operation"
+            },
+            "name": "operation"
           },
           {
             "title": "returns",
@@ -219,13 +456,13 @@
             "type": null
           },
           {
-            "title": "example",
-            "description": "sourceValue('$.key')"
-          },
-          {
             "title": "function",
             "description": null,
             "name": null
+          },
+          {
+            "title": "example",
+            "description": "sourceValue('$.key')"
           },
           {
             "title": "param",
@@ -262,13 +499,13 @@
             "type": null
           },
           {
-            "title": "example",
-            "description": "dataPath('key')"
-          },
-          {
             "title": "function",
             "description": null,
             "name": null
+          },
+          {
+            "title": "example",
+            "description": "dataPath('key')"
           },
           {
             "title": "param",
@@ -305,13 +542,13 @@
             "type": null
           },
           {
-            "title": "example",
-            "description": "dataValue('key')"
-          },
-          {
             "title": "function",
             "description": null,
             "name": null
+          },
+          {
+            "title": "example",
+            "description": "dataValue('key')"
           },
           {
             "title": "param",
@@ -348,13 +585,13 @@
             "type": null
           },
           {
-            "title": "example",
-            "description": "lastReferenceValue('key')"
-          },
-          {
             "title": "function",
             "description": null,
             "name": null
+          },
+          {
+            "title": "example",
+            "description": "lastReferenceValue('key')"
           },
           {
             "title": "param",
@@ -392,13 +629,13 @@
             "type": null
           },
           {
-            "title": "example",
-            "description": "each(\"$.[*]\",\n  create(\"SObject\",\n    field(\"FirstName\", sourceValue(\"$.firstName\"))\n  )\n)"
-          },
-          {
             "title": "function",
             "description": null,
             "name": null
+          },
+          {
+            "title": "example",
+            "description": "each(\"$.[*]\",\n  create(\"SObject\",\n    field(\"FirstName\", sourceValue(\"$.firstName\"))\n  )\n)"
           },
           {
             "title": "param",
@@ -444,13 +681,13 @@
             "type": null
           },
           {
-            "title": "example",
-            "description": "combine(\n  create('foo'),\n  delete('bar')\n)"
-          },
-          {
             "title": "function",
             "description": null,
             "name": null
+          },
+          {
+            "title": "example",
+            "description": "combine(\n  create('foo'),\n  delete('bar')\n)"
           },
           {
             "title": "param",
@@ -488,13 +725,13 @@
             "type": null
           },
           {
-            "title": "example",
-            "description": "field('destination_field_name__c', 'value')"
-          },
-          {
             "title": "function",
             "description": null,
             "name": null
+          },
+          {
+            "title": "example",
+            "description": "field('destination_field_name__c', 'value')"
           },
           {
             "title": "param",
@@ -540,13 +777,13 @@
             "type": null
           },
           {
-            "title": "example",
-            "description": "fields(list_of_fields)"
-          },
-          {
             "title": "function",
             "description": null,
             "name": null
+          },
+          {
+            "title": "example",
+            "description": "fields(list_of_fields)"
           },
           {
             "title": "param",
@@ -593,6 +830,11 @@
             "name": null
           },
           {
+            "title": "public",
+            "description": null,
+            "type": null
+          },
+          {
             "title": "param",
             "description": null,
             "type": {
@@ -637,13 +879,13 @@
             "type": null
           },
           {
-            "title": "example",
-            "description": "field(\"destination_string__c\", function(state) {\n  return arrayToString(dataValue(\"path_of_array\")(state), ', ')\n})"
-          },
-          {
             "title": "function",
             "description": null,
             "name": null
+          },
+          {
+            "title": "example",
+            "description": "field(\"destination_string__c\", function(state) {\n  return arrayToString(dataValue(\"path_of_array\")(state), ', ')\n})"
           },
           {
             "title": "param",
@@ -674,6 +916,92 @@
         ]
       },
       "valid": true
+    },
+    {
+      "name": "cursor",
+      "params": [
+        "value",
+        "options"
+      ],
+      "docs": {
+        "description": "Sets a cursor property on state.\nSupports natural language dates like `now`, `today`, `yesterday`, `n hours ago`, `n days ago`, and `start`,\nwhich will be converted relative to the environment (ie, the Lightning or CLI locale). Custom timezones\nare not yet supported.\nYou can provide a formatter to customise the final cursor value, which is useful for normalising\ndifferent inputs. The custom formatter runs after natural language date conversion.\nSee the usage guide at {@link https://docs.openfn.org/documentation/jobs/job-writing-guide#using-cursors}",
+        "tags": [
+          {
+            "title": "public",
+            "description": null,
+            "type": null
+          },
+          {
+            "title": "function",
+            "description": null,
+            "name": null
+          },
+          {
+            "title": "example",
+            "description": "cursor($.cursor, { defaultValue: 'today' })",
+            "caption": "Use a cursor from state if present, or else use the default value"
+          },
+          {
+            "title": "example",
+            "description": "cursor(22)",
+            "caption": "Use a pagination cursor"
+          },
+          {
+            "title": "param",
+            "description": "the cursor value. Usually an ISO date, natural language date, or page number",
+            "type": {
+              "type": "NameExpression",
+              "name": "any"
+            },
+            "name": "value"
+          },
+          {
+            "title": "param",
+            "description": "options to control the cursor.",
+            "type": {
+              "type": "NameExpression",
+              "name": "object"
+            },
+            "name": "options"
+          },
+          {
+            "title": "param",
+            "description": "set the cursor key. Will persist through the whole run.",
+            "type": {
+              "type": "NameExpression",
+              "name": "string"
+            },
+            "name": "options.key"
+          },
+          {
+            "title": "param",
+            "description": "the value to use if value is falsy",
+            "type": {
+              "type": "NameExpression",
+              "name": "any"
+            },
+            "name": "options.defaultValue"
+          },
+          {
+            "title": "param",
+            "description": "custom formatter for the final cursor value",
+            "type": {
+              "type": "NameExpression",
+              "name": "Function"
+            },
+            "name": "options.format"
+          },
+          {
+            "title": "returns",
+            "description": null,
+            "type": {
+              "type": "NameExpression",
+              "name": "Operation"
+            }
+          }
+        ]
+      },
+      "valid": false
     }
   ]
 }

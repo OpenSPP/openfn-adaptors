@@ -1,16 +1,17 @@
-
-
-import {
-  execute as commonExecute,
-  http,
-  expandReferences,
-} from '@openfn/language-common';
-import pkg from '@openfn/language-http';
-const { get, post } = pkg
-import request from 'superagent';
-import FormData from 'form-data';
+import { execute as commonExecute } from '@openfn/language-common';
+import { expandReferences } from '@openfn/language-common/util';
+import { Blob } from 'node:buffer';
 import js2xmlparser from 'js2xmlparser';
 import xlsx from 'xlsx';
+
+import { request, prepareNextState } from './Utils';
+/**
+ * State object
+ * @typedef {Object} CommcareHttpState
+ * @property data - The response body (as JSON)
+ * @property response - The HTTP response from the CommCare server (excluding the body)
+ * @property references - An array of all previous data objects used in the Job
+ */
 
 /**
  * Execute a sequence of operations.
@@ -31,42 +32,154 @@ export function execute(...operations) {
   };
 
   return state => {
-    state.configuration.authType = 'basic';
-    state.configuration.baseUrl = 'https://www.commcarehq.org/a/'.concat(
-      state.configuration.applicationName
-    );
     return commonExecute(...operations)({ ...initialState, ...state });
   };
 }
 
 /**
- * Performs a post request
- * @example
- *  clientPost(formData)
+ * Make a GET request to any CommCare endpoint. The response body will be returned to `state.data` as JSON.
+ * Paginated responses will be fully downloaded and returned as a single array, _unless_ an `offset` is passed.
+ * @public
  * @function
- * @param {Object} formData - Form Data with auth params and body
- * @returns {State}
+ * @example <caption>Get a specific case by id</caption>
+ * get("/case/12345")
+ * @example <caption>Get exactly 20 cases</caption>
+ * get("/case", { offset:0, limit: 20 })
+ * @example <caption>Get forms by app id</caption>
+ * get("/form", { app_id: "02bf50ab803a89ea4963799362874f0c" })
+ * @example <caption>Get all cases, 50 at a time, and add them to state</caption>
+ * get("/case", {}, (state) => {
+ *    state.cases.push(...state.data) // adds 50 cases to the cases array
+ *    return state;
+ * })
+ * @param {string} path - Path to resource
+ * @param {Object} [params] - Input parameters for the request. These vary by endpoint,  see {@link https://dimagi.atlassian.net/wiki/spaces/commcarepublic/pages/2143957366/Data+APIs CommCare docs}.
+ * @param {function} [callback] - Optional callback function. Invoked once per page of data retrieved.
+ * @state {CommcareHttpState}
+ * @returns {Operation}
  */
-function clientPost({ url, body, username, password }) {
-  return new Promise((resolve, reject) => {
-    request
-      .post(url)
-      .auth(username, password)
-      .set('Content-Type', 'application/xml')
-      .send(body)
-      .end((error, res) => {
-        if (!!error || !res.ok) {
-          reject(error);
+export function get(path, params = {}, callback = s => s) {
+  return async state => {
+    const { domain } = state.configuration;
+    const [resolvedPath, resolvedParams] = expandReferences(
+      state,
+      path,
+      params
+    );
+
+    let offset, limit;
+
+    let nextState = state;
+    let result;
+
+    // Automatically paginate if the user did not pass an offset
+    let allowPagination = isNaN(resolvedParams.offset);
+
+    try {
+      let requestParams = {
+        ...resolvedParams,
+      };
+
+      do {
+        // Make the first request
+        const response = await request(
+          state.configuration,
+          `/a/${domain}/api/v0.5/${resolvedPath}`,
+          {
+            method: 'GET',
+            params: requestParams,
+            contentType: 'application/json',
+          }
+        );
+
+        nextState = prepareNextState(state, response, callback);
+        // If the server tells us there's another page of data, setup
+        // the next request to get it
+        if (response?.body?.meta?.next) {
+          if (!result) {
+            result = [];
+          }
+          offset = response.body.meta.offset + response.body.meta.limit;
+          limit = response.body.meta.limit;
+
+          requestParams = {
+            ...requestParams,
+            offset,
+            limit,
+          };
+          result.push(...nextState.data);
+        } else {
+          if (result) {
+            result.push(...nextState.data);
+          } else {
+            result = nextState.data;
+          }
+          // Exit the loop when no more data is available
+          break;
         }
-        resolve(res);
-      });
-  });
+      } while (allowPagination);
+
+      return {
+        ...nextState,
+        data: result,
+      };
+    } catch (e) {
+      if (e.statusCode === 404) {
+        e.body = { error: `Resource ${path} not found` };
+      }
+      throw e;
+    }
+  };
 }
 
 /**
- * Convert form data to xls then submit.
+ * Make a POST request to any CommCare endpoint.
+ * @example <caption>Post a user object to to the /user endpoint</caption>
+ * post("/user", { "username":"test", "password":"somepassword" })
+ * @function
  * @public
- * @example
+ * @param {string} path - Path to resource
+ * @param {object} data - Object or JSON to use as the request body
+ * @param {Object} [params] - Optional request params
+ * @param {function} [callback] - Optional callback to handle the response
+ * @returns {Operation}
+ * @state {CommcareHttpState}
+ */
+export function post(path, data, params = {}, callback = s => s) {
+  return async state => {
+    const { domain } = state.configuration;
+    const [resolvedPath, resolvedData, resolvedParams] = expandReferences(
+      state,
+      path,
+      data,
+      params
+    );
+
+    try {
+      const response = await request(
+        state.configuration,
+        `/a/${domain}/api/v0.5/${resolvedPath}`,
+        {
+          method: 'POST',
+          data: resolvedData,
+          params: resolvedParams,
+          contentType: 'application/json',
+        }
+      );
+
+      return prepareNextState(state, response, callback);
+    } catch (e) {
+      throw e.body.error ?? e;
+    }
+  };
+}
+
+/**
+ * Bulk upload data to CommCare. Accepts an array of objects, converts them into
+ * an XLS representation, and uploads.
+ * @public
+ * @function
+ * @example <caption>Upload a single row of data</caption>
  * submitXls(
  *    [
  *      {name: 'Mamadou', phone: '000000'},
@@ -77,23 +190,19 @@ function clientPost({ url, body, username, password }) {
  *      create_new_cases: 'on',
  *    }
  * )
- * @function
- * @param {Object} formData - Object including form data.
- * @param {Object} params - Request params including case type and external id.
+ * @param {array} data - Array of objects to upload
+ * @param {Object} params - Input parameters, see {@link https://dimagi.atlassian.net/wiki/spaces/commcarepublic/pages/2143946459/Bulk+Upload+Case+Data CommCare docs}.
+ * @state data - the response from the CommCare Server
  * @returns {Operation}
  */
-export function submitXls(formData, params) {
-  return state => {
-    const { applicationName, hostUrl, username, apiKey } = state.configuration;
+export function submitXls(data, params) {
+  return async state => {
+    const { domain } = state.configuration;
 
-    const json = expandReferences(formData)(state);
+    const [json] = expandReferences(state, data);
     const { case_type, search_field, create_new_cases } = params;
 
-    const url = (hostUrl || 'https://www.commcarehq.org').concat(
-      '/a/',
-      applicationName,
-      '/importer/excel/bulk_upload_api/'
-    );
+    const path = `/a/${domain}/importer/excel/bulk_upload_api/`;
 
     const workbook = xlsx.utils.book_new();
     const worksheet = xlsx.utils.json_to_sheet(json);
@@ -104,134 +213,116 @@ export function submitXls(formData, params) {
     const buffer = xlsx.write(workbook, { type: 'buffer', bookType: 'xls' });
     // xlsx.writeFile(workbook, 'out.xls'); // If needing to write to filesystem
 
-    const data = new FormData();
+    const form = new FormData();
 
-    data.append('file', buffer, { filename: 'output.xls' });
-    // data.append('file', fs.createReadStream('./out.xls'));
-    data.append('case_type', case_type);
-    data.append('search_field', search_field);
-    data.append('create_new_cases', create_new_cases);
+    form.append('file', new Blob([buffer]), 'output.xls');
+    // data.append('file', fs.createReadStream('out.xls'));
+    form.append('case_type', case_type);
+    form.append('search_field', search_field);
+    form.append('create_new_cases', create_new_cases);
 
-    console.log('Posting to url: '.concat(url));
-    return http
-      .post({
-        url,
-        data,
-        headers: {
-          ...data.getHeaders(),
-          Authorization: `ApiKey ${username}:${apiKey}`,
-        },
-      })(state)
-      .then(response => {
-        return { ...state, data: { body: response.data } };
-      })
-      .catch(err => {
-        throw { ...err, config: {}, request: {} };
+    try {
+      const response = await request(state.configuration, path, {
+        method: 'POST',
+        data: form,
       });
+
+      return prepareNextState(state, response);
+    } catch (e) {
+      throw e.body ?? e;
+    }
   };
 }
 
 /**
- * Submit form data
+ * Submit forms to CommCare. Accepts an array of JSON
+ * objects, converts them into XML, and submits to CommCare as an x-form.
  * @public
- * @example
+ * @function
+ * @example <caption>Submit a form to CommCare</caption>
  *  submit(
  *    fields(
- *      field("@", function(state) {
- *        return {
- *          "xmlns": "http://openrosa.org/formdesigner/form-id-here"
- *        };
+ *      field("@", (state) => ({
+ *          "xmlns": `http://openrosa.org/formdesigner/${state.formId}`
  *      }),
- *      field("question1", dataValue("answer1")),
- *      field("question2", "Some answer here.")
+ *      field("question1", (state) => state.data.answer1),
+ *      field("question2", (state) => state.data.answer2),
  *    )
  *  )
- * @function
- * @param {Object} formData - Object including form data.
+ * @param {Object} data - The form as a JSON object
+ * @state data - the response from the CommCare Server
  * @returns {Operation}
  */
-export function submit(formData) {
-  return state => {
-    const jsonBody = expandReferences(formData)(state);
+export function submit(data) {
+  return async state => {
+    const [jsonBody] = expandReferences(state, data);
     const body = js2xmlparser('data', jsonBody);
 
-    const {
-      // this should be called project URL.
-      // it is what lives after www.commcarehq.org/a/...
-      applicationName,
-      username,
-      password,
-      appId,
-      hostUrl,
-    } = state.configuration;
+    const { domain, appId } = state.configuration;
 
-    const url = (hostUrl || 'https://www.commcarehq.org').concat(
-      '/a/',
-      applicationName,
-      '/receiver/',
-      appId,
-      '/'
-    );
+    const path = `/a/${domain}/receiver/${appId}/`;
 
-    console.log('Posting to url: '.concat(url));
     console.log('Raw JSON body: '.concat(JSON.stringify(jsonBody)));
     console.log('X-form submission: '.concat(body));
 
-    return clientPost({
-      url,
-      body,
-      username,
-      password,
-    }).then(response => {
-      console.log(`Server repsonded with a ${response.status}:`);
-      console.log(response);
-      return { ...state, references: [response, ...state.references] };
+    const response = await request(state.configuration, path, {
+      method: 'POST',
+      data: body,
+      contentType: 'text/xml',
+      parseAs: 'text',
     });
+
+    return prepareNextState(state, response);
   };
 }
 
 /**
  * Make a GET request to CommCare's Reports API
- * and POST the response to somewhere else.
+ * and POST the response somewhere else.
  * @public
- * @example
- * fetchReportData(reportId, params, postUrl)
+ * @example <caption>Fetch 10 records from a report and post them to example.com</caption>
+ * fetchReportData(
+ *   "9aab0eeb88555a7b4568676883e7379a",
+ *   { limit: 10 },
+ *   "https://www.example.com/api/"
+ * )
  * @function
  * @param {String} reportId - API name of the report.
- * @param {Object} params - Query params, incl: limit, offset, and custom report filters.
- * @param {String} postUrl - Url to which the response object will be posted.
+ * @param {Object} params - Input parameters for the request, see {@link https://dimagi.atlassian.net/wiki/spaces/commcarepublic/pages/2143957341/Download+Report+Data Commcare docs}.
+ * @param {String} postUrl - URL to which the response object will be posted.
  * @returns {Operation}
  */
 export function fetchReportData(reportId, params, postUrl) {
-  return http.get(`api/v0.5/configurablereportdata/${reportId}/`, {
-    query: function (state) {
-      console.log(
-        'getting from url: '.concat(
-          state.configuration.baseUrl,
-          `/api/v0.5/configurablereportdata/${reportId}/`
-        )
-      );
-      console.log('with params: '.concat(params));
-      return params;
-    },
-    callback: function (state) {
-      var reportData = state.response.body;
-      return post(postUrl, {
-        body: reportData,
-      })(state).then(function (state) {
-        delete state.response;
-        console.log('fetchReportData succeeded.');
-        console.log('Posted to: '.concat(postUrl));
-        return state;
-      });
-    },
-  });
+  return async state => {
+    const path = `/a/${state.configuration.domain}/api/v0.5/configurablereportdata/${reportId}/`;
+
+    console.log('with params: '.concat(JSON.stringify(params)));
+
+    const { body: reportData } = await request(state.configuration, path, {
+      method: 'GET',
+      contentType: 'application/json',
+    });
+
+    await request(state.configuration, postUrl, {
+      method: 'POST',
+      params,
+      data: reportData,
+      contentType: 'application/json',
+    });
+
+    console.log('fetchReportData succeeded.');
+    console.log('Posted to: ', postUrl);
+    return state;
+  };
 }
 
 export {
   fn,
+  fnIf,
+  cursor,
   alterState,
   arrayToString,
+  dateFns,
   combine,
   dataPath,
   dataValue,

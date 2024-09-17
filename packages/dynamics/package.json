@@ -1,6 +1,6 @@
 {
   "name": "@openfn/language-dynamics",
-  "version": "0.4.8",
+  "version": "0.5.4",
   "description": "A Microsoft Dynamics Language Pack for OpenFn",
   "main": "dist/index.cjs",
   "scripts": {
@@ -20,7 +20,7 @@
     "configuration-schema.json"
   ],
   "dependencies": {
-    "@openfn/language-common": "1.11.1",
+    "@openfn/language-common": "2.0.1",
     "request": "^2.72.0"
   },
   "devDependencies": {
@@ -31,7 +31,6 @@
     "nock": "^8.0.0",
     "sinon": "^1.17.2",
     "esno": "^0.16.3",
-    "@openfn/buildtools": "workspace:^1.0.1",
     "@openfn/simple-ast": "0.4.1",
     "rimraf": "^3.0.2"
   },
@@ -43,6 +42,7 @@
   "exports": {
     ".": {
       "import": "./dist/index.js",
+      "types": "./types/index.d.ts",
       "require": "./dist/index.cjs"
     },
     "./package.json": "./package.json"

@@ -1,10 +1,11 @@
 {
   "name": "@openfn/language-mssql",
-  "version": "4.1.8",
+  "version": "5.0.1",
   "description": "A Microsoft SQL language pack for OpenFn",
   "exports": {
     ".": {
       "import": "./dist/index.js",
+      "types": "./types/index.d.ts",
       "require": "./dist/index.cjs"
     },
     "./package.json": "./package.json"
@@ -31,11 +32,10 @@
     "configuration-schema.json"
   ],
   "dependencies": {
-    "@openfn/language-common": "workspace:1.11.1",
+    "@openfn/language-common": "workspace:*",
     "tedious": "15.1.0"
   },
   "devDependencies": {
-    "@openfn/buildtools": "workspace:^1.0.2",
     "@openfn/simple-ast": "0.4.1",
     "assertion-error": "2.0.0",
     "chai": "4.3.6",

@@ -1,6 +1,6 @@
 {
   "name": "@openfn/language-twilio",
-  "version": "0.4.1",
+  "version": "0.5.1",
   "description": "An Language Package for twilio",
   "main": "dist/index.cjs",
   "scripts": {
@@ -20,11 +20,10 @@
     "configuration-schema.json"
   ],
   "dependencies": {
-    "@openfn/language-common": "^1.8.1",
+    "@openfn/language-common": "1.15.1",
     "twilio": "^3.83.2"
   },
   "devDependencies": {
-    "@openfn/buildtools": "workspace:^1.0.2",
     "@openfn/simple-ast": "^0.4.1",
     "assertion-error": "^1.1.0",
     "chai": "^3.5.0",
@@ -42,6 +41,7 @@
   "exports": {
     ".": {
       "import": "./dist/index.js",
+      "types": "./types/index.d.ts",
       "require": "./dist/index.cjs"
     },
     "./package.json": "./package.json"

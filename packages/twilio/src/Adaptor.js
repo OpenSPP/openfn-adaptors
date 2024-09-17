@@ -55,7 +55,7 @@ export function sendSMS(params) {
         .then(response => {
           if (response.errorCode) {
             console.log(response);
-            reject(errorCode);
+            reject(response.errorCode);
           }
           console.log(response);
           return response;
@@ -74,6 +74,7 @@ export {
   sourceValue,
   alterState,
   fn,
+  fnIf,
   http,
   each,
   merge,

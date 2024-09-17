@@ -1,5 +1,37 @@
 # @openfn/language-facebook
 
+## 0.4.2
+
+### Patch Changes
+
+- 8146c23: Fix typings in package.json
+- Updated dependencies [8146c23]
+  - @openfn/language-common@2.0.1
+
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies [4fe527c]
+  - @openfn/language-common@2.0.0
+
+## 0.4.0
+
+### Minor Changes
+
+- 73433c20: Add `fnIf` operation
+
+### Patch Changes
+
+- Updated dependencies [106ecf6d]
+  - @openfn/language-common@1.14.0
+
+## 0.3.3
+
+### Patch Changes
+
+- d5a326f5: Add example `access_token` in the `configuration-schema`
+
 ## 0.3.2
 
 ### Patch Changes

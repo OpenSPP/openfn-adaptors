@@ -1,6 +1,6 @@
 {
   "name": "@openfn/language-magpi",
-  "version": "1.1.1",
+  "version": "1.2.2",
   "description": "A Magpi Language Pack for OpenFn",
   "main": "dist/index.cjs",
   "scripts": {
@@ -20,7 +20,7 @@
     "configuration-schema.json"
   ],
   "dependencies": {
-    "@openfn/language-common": "workspace:^1.8.1",
+    "@openfn/language-common": "workspace:^2.0.1",
     "JSONPath": "^0.10.0",
     "js2xmlparser": "^3.0.0",
     "lodash-fp": "^0.10.4",
@@ -29,7 +29,6 @@
     "xml2js": "0.5.0"
   },
   "devDependencies": {
-    "@openfn/buildtools": "workspace:^1.0.2",
     "@openfn/simple-ast": "0.4.1",
     "assertion-error": "^2.0.0",
     "chai": "^4.3.7",
@@ -47,6 +46,7 @@
   "exports": {
     ".": {
       "import": "./dist/index.js",
+      "types": "./types/index.d.ts",
       "require": "./dist/index.cjs"
     },
     "./package.json": "./package.json"

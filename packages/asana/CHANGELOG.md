@@ -1,5 +1,62 @@
 # @openfn/language-asana
 
+## 4.0.1
+
+### Patch Changes
+
+- 8146c23: Fix typings in package.json
+- Updated dependencies [8146c23]
+  - @openfn/language-common@2.0.1
+
+## 4.0.0
+
+### Major Changes
+
+- Export new common http helpers (http namespace)
+
+## 3.3.1
+
+### Patch Changes
+
+- 510354a: Don't allow HTTP helpers to call out to different domains. This can
+  cause a security violation where credentials are sent to external servers. Use
+  generic HTTP helpers like `http.get` or `fetch` instead.
+- 510354a: Fix an issue where not passing a params argument would trigger an
+  exception
+- Updated dependencies [4fe527c]
+  - @openfn/language-common@2.0.0
+
+## 3.3.0
+
+### Minor Changes
+
+- 73433c20: Add `fnIf` operation
+
+### Patch Changes
+
+- Updated dependencies [106ecf6d]
+  - @openfn/language-common@1.14.0
+
+## 3.2.0
+
+### Minor Changes
+
+- bae5d3b6: Add the cursor() function from common. See the job writing guide for
+  more information.
+
+### Patch Changes
+
+- Updated dependencies [1ad86651]
+  - @openfn/language-common@1.13.0
+
+## 3.1.0
+
+### Minor Changes
+
+- 673e41e8: - Add `createTaskStory()` function
+  - Replaced common `http` with a more efficient implementation from
+    `common/util` http
+
 ## 3.0.1
 
 ### Patch Changes

@@ -1,5 +1,107 @@
 # @openfn/language-mssql
 
+## 5.0.1
+
+### Patch Changes
+
+- 8146c23: Fix typings in package.json
+- Updated dependencies [8146c23]
+  - @openfn/language-common@2.0.1
+
+## 5.0.0
+
+### Major Changes
+
+- Export new common http helpers (http namespace)
+
+## 4.3.4
+
+### Patch Changes
+
+- Updated dependencies [4fe527c]
+  - @openfn/language-common@2.0.0
+
+## 4.3.3
+
+### Patch Changes
+
+- Updated dependencies [4c08444]
+- Updated dependencies [73d0a02]
+  - @openfn/language-common@1.15.1
+
+## 4.3.2
+
+### Patch Changes
+
+- bb5436c: Add title and description for `port` configuration
+
+## 4.3.1
+
+### Patch Changes
+
+- Updated dependencies [5fb82f07]
+  - @openfn/language-common@1.15.0
+
+## 4.3.0
+
+### Minor Changes
+
+- 73433c20: Add `fnIf` operation
+
+### Patch Changes
+
+- Updated dependencies [106ecf6d]
+  - @openfn/language-common@1.14.0
+
+## 4.2.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @openfn/language-common@1.13.5
+
+## 4.2.3
+
+### Patch Changes
+
+- Updated dependencies [12f02ed5]
+  - @openfn/language-common@1.13.4
+
+## 4.2.2
+
+### Patch Changes
+
+- Updated dependencies [88f99a8f]
+  - @openfn/language-common@1.13.3
+
+## 4.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @openfn/language-common@1.13.2
+
+## 4.2.0
+
+### Minor Changes
+
+- 2964fc8d: - Add `cursor()` function
+  - Update `configuration-schema.json`
+
+## 4.1.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @openfn/language-common@1.13.1
+
+## 4.1.9
+
+### Patch Changes
+
+- Updated dependencies [1ad86651]
+  - @openfn/language-common@1.13.0
+
 ## 4.1.8
 
 ### Patch Changes

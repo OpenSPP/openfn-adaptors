@@ -1,5 +1,72 @@
 # @openfn/language-googlesheets
 
+## 3.0.1
+
+### Patch Changes
+
+- 8146c23: Fix typings in package.json
+- Updated dependencies [8146c23]
+  - @openfn/language-common@2.0.1
+
+## 3.0.0
+
+### Major Changes
+
+- Export new common http helpers (http namespace)
+
+## 2.5.2
+
+### Patch Changes
+
+- Updated dependencies [4fe527c]
+  - @openfn/language-common@2.0.0
+
+## 2.5.1
+
+### Patch Changes
+
+- 73d0a02: Make documentation public
+- Updated dependencies [4c08444]
+- Updated dependencies [73d0a02]
+  - @openfn/language-common@1.15.1
+
+## 2.5.0
+
+### Minor Changes
+
+- 73433c20: Add `fnIf` operation
+
+### Patch Changes
+
+- Updated dependencies [106ecf6d]
+  - @openfn/language-common@1.14.0
+
+## 2.4.0
+
+### Minor Changes
+
+- bae5d3b6: Add the cursor() function from common. See the job writing guide for
+  more information.
+
+### Patch Changes
+
+- Updated dependencies [1ad86651]
+  - @openfn/language-common@1.13.0
+
+## 2.3.1
+
+### Patch Changes
+
+- 4594a324: add callback jsdocs
+
+## 2.3.0
+
+### Minor Changes
+
+- 8405fc9a: - Add `getValues()` function
+  - Improve connection handling
+  - Improve error logs
+
 ## 2.2.2
 
 ### Patch Changes

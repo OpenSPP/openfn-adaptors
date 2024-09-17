@@ -1,5 +1,188 @@
 # @openfn/language-salesforce
 
+## 4.8.3
+
+### Patch Changes
+
+- 8146c23: Fix typings in package.json
+- Updated dependencies [8146c23]
+  - @openfn/language-common@2.0.1
+
+## 4.8.2
+
+### Patch Changes
+
+- ce08e7f: Fix `autoFetch` behaviour in `query()` function. All records are
+  merged into a single `records` array, and pushed to `[0]` in
+  `state.references`.
+
+  For jobs which use `references[0][0]` to read query results, this is a
+  breaking fix.
+
+## 4.8.1
+
+### Patch Changes
+
+- Updated dependencies [4c08444]
+- Updated dependencies [73d0a02]
+  - @openfn/language-common@1.15.1
+
+## 4.8.0
+
+### Minor Changes
+
+- 5fb82f07: Export `group` operation from common
+- b5e0c266: ### Added
+
+  - `insert()` function as an alias for `create()`.
+
+  ### Improved
+
+  - JSDocs for `query`, `bulk`, `describe`, `create`, and `upsert`.
+
+  ### Deprecated
+
+  - `upsertIf()` and `createIf()` functions are now deprecated. Use
+    `fnIf(condition, upsert())` instead.
+
+### Patch Changes
+
+- Updated dependencies [5fb82f07]
+  - @openfn/language-common@1.15.0
+
+## 4.7.0
+
+### Minor Changes
+
+- 73433c20: Add `fnIf` operation
+
+### Patch Changes
+
+- Updated dependencies [106ecf6d]
+  - @openfn/language-common@1.14.0
+
+## 4.6.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @openfn/language-common@1.13.5
+
+## 4.6.10
+
+### Patch Changes
+
+- 90f44c62: Include the Salesforce query response in the result, even if no
+  records are found.
+
+## 4.6.9
+
+### Patch Changes
+
+- Fix any-ascii load and add more tests
+
+## 4.6.8
+
+### Patch Changes
+
+- Properly ensure any-ascii is loaded before executing, resolving a critical
+  race that we are losing in production
+
+## 4.6.7
+
+### Patch Changes
+
+- 332225ec: - Set default API version to `47.0`
+  - In `bulkQuery` throw errors if API version is less than `47.0`
+  - Update `bulkQuery` jsdocs with a link to `Bulk API 2.0 Query`
+
+## 4.6.6
+
+### Patch Changes
+
+- Updated dependencies [12f02ed5]
+  - @openfn/language-common@1.13.4
+
+## 4.6.5
+
+### Patch Changes
+
+- b1c915b0: Add documentation about Salesforce API limits to query and bulkQuery
+
+## 4.6.4
+
+### Patch Changes
+
+- Updated dependencies [88f99a8f]
+  - @openfn/language-common@1.13.3
+
+## 4.6.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @openfn/language-common@1.13.2
+
+## 4.6.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @openfn/language-common@1.13.1
+
+## 4.6.1
+
+### Patch Changes
+
+- Updated dependencies [1ad86651]
+  - @openfn/language-common@1.13.0
+
+## 4.6.0
+
+### Minor Changes
+
+- cfe1ccb: Add options and callback params in query function
+
+## 4.5.2
+
+### Patch Changes
+
+- 2006e88: fix an issue with bulk jobs not closing
+
+## 4.5.1
+
+### Patch Changes
+
+- fa3e28fe: refactor bulk() to use newExpandReferences
+
+## 4.5.0
+
+### Minor Changes
+
+- 0d2b478: Remove `instance_url` under `other_params` and put it at the root
+  level of the configuration schema
+
+## 4.4.0
+
+Deprecated because it does not work with Lightning
+
+### Minor Changes
+
+- 632b585: Add `OAuth` support
+- a12f434: Add `request(path, opts, cb)` function
+
+## 4.3.1
+
+### Patch Changes
+
+- 1131c34: Remove regex pattern for validation and changed minLength to 1
+
+## 4.3.0
+
+### Minor Changes
+
+- 1d5b62f: Add `toUTF8` function
+
 ## 4.2.2
 
 ### Patch Changes

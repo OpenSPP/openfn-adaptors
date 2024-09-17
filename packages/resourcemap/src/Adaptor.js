@@ -60,10 +60,8 @@ export function submitSite(collection_id, submissionData) {
     const { username, password, baseUrl } = state.configuration;
 
     // /api/collections/:collection_id/sites.json
-    const url = resolveUrl(
-      baseUrl + '/',
-      'api/collections/' + collection_id + '/sites.json'
-    );
+    const url =
+      baseUrl + '/' + 'api/collections/' + collection_id + '/sites.json';
 
     return new Promise((resolve, reject) => {
       request.post(
@@ -104,6 +102,7 @@ export function submitSite(collection_id, submissionData) {
 
 export {
   fn,
+  fnIf,
   alterState,
   field,
   fields,

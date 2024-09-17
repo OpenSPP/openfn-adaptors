@@ -6,15 +6,21 @@ or Typescript modules that provide helper functions to communicate with a
 specific external system.
 
 For a fully open source workflow automation platform that leverages these
-adaptors, see [OpenFn Lighnting](https://github.com/OpenFn/lightning).
+adaptors, see [OpenFn Lightning](https://github.com/OpenFn/lightning).
 
 ## Getting Started
 
-_Note: This repo requires [pnpm](https://pnpm.io/installation) and
-[asdf](https://github.com/asdf-vm/asdf) to be installed globally on your
-machine._
+_Note: [asdf](https://github.com/asdf-vm/asdf) to be installed globally on your
+machine. Add the nodejs and pnpm plugin once asdf is installed globally._
 
 A few first time repo steps:
+
+```
+asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
+asdf plugin-add pnpm
+```
+
+Then:
 
 ```
 asdf install # Install tool versions
@@ -77,19 +83,9 @@ please make one and assign yourself.
   repo into `/repo/openfn/adaptors`, then in your `.bashrc` file, add
   `export OPENFN_ADAPTORS_REPO=/repo/openfn/adaptors`.
 
-- Create a copy of the adaptor [template](packages/template), and rename it.
-  `cp -R packages/template packages/youradaptorname`
+- Generate your own adaptor. `pnpm generate youradaptorname`
 
-- Open package.json, and update the `name`, `description` and `build` from
-  `template` to your `youradaptorname`. Update the version.
-
-- Update the top-level changelog comment `# @openfn/language-template` to
-  `# @openfn/language-youradaptorname` and delete the remaining example content.
-  Delete ast.json, then run `pnpm clean` (this will remove the dist, types and
-  docs folders).
-
-- Update your adaptor's README.md to use your new adaptor name (we'll come back
-  to this later to update the sample operation)
+- Install your dependencies `pnpm install`
 
 #### 2. Create a job with the operation you'd like to add, and run it so it fails
 
@@ -133,23 +129,22 @@ export function yourFunctionName(arguments) {
 ```
 
 The logic is where you will prepare your API request. Build the URL, passing in
-any arguments if needed. Next, return the fetch request, making sure you set the
-Authorization, passing in any secrets from `state.configuration`.
+any arguments if needed. Then, using a helper function in common, return the
+fetch request, making sure you set the Authorization, passing in any secrets
+from `state.configuration`.
 
 ```js
+import { get } from '@openfn/language-common/util';
+
 export function getTodaysWeather(latitude = 25.52, longitude = 13.41) {
   return state => {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,windspeed_10m`;
 
-    return (
-      fetch(url, {
-        headers: {
-          Authorization: `${state.configuration.username}:${state.configuration.password}`,
-        },
-      })
-        .then(response => response.json())
-        .then(data => ({ ...state, data }));
-    );
+    const headers = {
+      Authorization: `${state.configuration.username}:${state.configuration.password}`,
+    };
+    const result = await get(url, { headers });
+    return { ...state, data: result.body };
   };
 }
 ```
@@ -159,7 +154,7 @@ export function getTodaysWeather(latitude = 25.52, longitude = 13.41) {
   This defines required parameters and their expected values for configuring the
   adaptor's authentication and authorization settings.
 
-  1. Open the configuration file of the newly copied template,
+  1. Open the configuration file of the newly generated adaptor,
      `configuration-schema.json`.
   2. Specify the required parameters and their data types (these will be any
      values in state.configuration you are using in your adaptor function).
@@ -185,7 +180,7 @@ export function getTodaysWeather(latitude = 25.52, longitude = 13.41) {
 
 Import your newly defined function
 
-```
+```js
 import { functionName } from '../src/Adaptor.js';
 ```
 
@@ -194,7 +189,7 @@ to see how state should be passed to it).
 
 Make an assertion to check the result.
 
-```
+```js
 it('should xyz', async () => {
 const state = {
   configuration: {},
@@ -236,40 +231,55 @@ Look in the `.changesets` folder to see your change.
 
 Commit the changeset to the repo when you're ready.
 
+Note that the newly generated adaptor should ideally never have its version
+increased - it should be locked at `1.0.0`.
+
 ## Releases
 
-To release, run this from the root:
+New releases will be published to npm automatically when merging into the `main`
+branch`.
 
-```
-pnpm changeset version
-```
+Version numbers should be bumped with `changeset` and git tags should be pushed
+to the release branch BEFORE merging.
 
-This will bump all changed packages and update their release notes.
+1. Run `pnpm changeset version` from root to bump versions
+1. Run `pnpm install`
+1. Commit the new version numbers
+1. Run `pnpm changeset tag` to generate tags
+1. Push tags `git push --tags`
 
-Then install packages and commit changes with:
+Remember tags may need updating if commits come in after the tags are first
+generated.
 
-```
-pnpm install
-```
+When ready, merge the branch to main and a Github Action will trigger the
+release.
 
-Build the adaptors with:
+## Pre-releases
 
-```
-pnpm -r run build
-```
+**NOTE: pre-release automation is currently DISABLED until support is activated
+in Lightning**
 
-To publish the release, run:
+Pre-release builds for adaptors are availabe with the `@next` tag. These can be
+used in the CLI and Lightning and are generally available on `npm` (but because
+they're not flagged as `latest`, they won't be downloaded by default).
 
-```
-pnpm changeset publish
-```
+Old pre-release versions will be deprecated when a new tag is published.
 
-And finally, push the tags to Github so that the source code can be browsed for
-each new release with:
+Pre-releases are available for any non-draft PR with at least one changeset.
 
-```
-git push --follow-tags
-```
+The pre-release build will be updated when:
+
+- A PR is opened in a non-draft state
+- A new commit is pushed
+- A changeset is added
+
+Pre-releases will be given the correct next version number (the number that
+`pnpm changeset version` will generated), plus the suffix `-next-<sha>`, where
+sha is teh short github SHA for the commit.
+
+Note that the Worker and CLI will both always download the latest versions of
+the adaptor with the `@next` tag - it's a rolling tag and should always be up to
+date.
 
 ## Build tooling
 
@@ -279,6 +289,12 @@ everything.
 
 Add `--watch` to watch the `src` for changes and rebuild this dist. This is
 useful when developing with the CLI.
+
+You can also watch with `build docs`, ie:
+
+```
+pnpm -C adaptors/http build docs --watch
+```
 
 Each adaptor's build command should simply call `build-adaptor` with the package
 name.
@@ -290,6 +306,32 @@ Examples:
 ```
 pnpm -C packages/salesforce build --watch
 ```
+
+### Docs
+
+Docs are generated from the JSDoc annotations in adaptors. They are output as
+markdown files in the `./docs` directly and not checked in to source control.
+
+The markdown output can be customized by overriding the built-in handlebars
+templates in jsoc2md.
+
+- Find the template you want to customise in [j2sdoc2md source()
+  https://github.com/jsdoc2md/dmd/tree/master/partials) (this can be tricky)
+- Copy the template contents
+- Paste into a file with the same name (this is important) in
+  `tools/build/src/partials`
+- Edit `tools/build/src/commands/docs.ts` and add the path to your new template
+  to jsdoc2md's `renderOpts` (see how the other .hbs files are loaded in)
+- Make your changes
+- Run `pnpm build docs` from root (or just one adaptor folder) and inspect the
+  generated `docs/index/md` file.
+
+Once built, the docs need to be compiled into a JSON file to be published to the
+docs site. This is run automatically through github actions.
+
+For local dev against the docsite, you can run `pnpm docs:build` to rebuild your
+local `docs.json` file. Use `pnpm docs:watch` to watch for md changes in
+packages/\* and rebuild automatically.
 
 ## Metadata
 
@@ -317,7 +359,7 @@ You can run these from the repo root or from the adaptor folder.
 ## Migration Guide
 
 Any old adaptors should be copied/cloned into this repo, with all build, lint
-and git artefacts removed and the package.json updated.
+and git artifacts removed and the package.json updated.
 
 This checklist walks you through the process.
 

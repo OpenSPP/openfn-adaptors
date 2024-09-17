@@ -1,4 +1,139 @@
-v0.4.0
+## 2.0.0
+
+## 2.0.1
+
+### Patch Changes
+
+- 8146c23: Fix typings in package.json
+
+The 2.0 version of common removes axios and re-writes the `http` namespace.
+
+You can now use `http.request()` from any adaptor that exports it:
+
+```
+http.request(
+  'GET',
+  'https://jsonplaceholder.typicode.com/todos',
+  http.options().basic('user', 'pass')
+)
+```
+
+`http.get()` and `http.post()` are also available.
+
+These functions behave just like the HTTP adaptor's operations (except that they
+don't handle auth for you).
+
+Use the `http.options()` helper functiosn to set basic auth headers and set the
+content type to JSON.
+
+### Major Changes
+
+- Replace axios-based http operations with cleaner, undici-based ones
+- Removed axios export
+
+### Minor Changes
+
+- Add options helpers to http namespace
+
+### Patch Changes
+
+- 4c08444: document `date-fns` functions
+
+## 1.15.0
+
+### Minor Changes
+
+- 5fb82f07: - Add `group()` operation
+  - Initialize `state.references` in `composeNextState()`
+
+## 1.14.0
+
+### Minor Changes
+
+- 106ecf6d: Add `fnIf` operation
+
+## 1.13.5
+
+### Patch Changes
+
+- http helpers: Fix an issue where query parameters in the URL did not get sent
+  to the server
+
+## 1.13.4
+
+### Patch Changes
+
+- 12f02ed5: http helpers: Ensure redirects append base url
+
+## 1.13.3
+
+### Patch Changes
+
+- 88f99a8f: cursor: support format option
+
+## 1.13.2
+
+### Patch Changes
+
+- Security updates (lodash,undici)
+
+## 1.13.1
+
+### Patch Changes
+
+- Fix jsdoc link
+
+## 1.13.0
+
+### Minor Changes
+
+- 1ad86651: Added cursor() helper
+
+## 1.12.0
+
+### Minor Changes
+
+- 7f52699: New HTTP helper functions have been added to common in
+  `src/util/http.js`
+
+  These are based on the `undici` library. They are functions, not operations,
+  so they do not get and return state, and do not expand references.
+
+  They are designed to be used by other adaptors to make HTTP requests easier.
+
+  ## Usage
+
+  ```
+  // Import the helper function
+  import { get } from '@openfn/language-common/util'
+
+  // This is an example operation
+  export function get(id, callback) {
+    return async (state) => {
+      const [resolvedId] = expandReferences(
+        state,
+        id,
+      );
+
+      // Call the new common helper to fetch some json
+      const response = await get(`www.example.com/resource/{$resolvedId}`, { parseAs: 'json' });
+
+      // Return the response body as data, and also include the response object as a convenience
+      return {
+        ...state,
+        response,
+        data: response.body
+      }
+    }
+  }
+  ```
+
+  See the http adaptor for a reference implementation.
+
+  ## Deprecation notice
+
+  The existing http operations in `src/http.js` have been deprecated, and
+  adaptors should migrate to the new helpers.
 
 ## 1.11.1
 

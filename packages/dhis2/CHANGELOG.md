@@ -1,5 +1,72 @@
 # @openfn/language-dhis2
 
+## 5.0.1
+
+### Patch Changes
+
+- 8146c23: Fix typings in package.json
+- Updated dependencies [8146c23]
+  - @openfn/language-common@2.0.1
+
+## 5.0.0
+
+### Major Changes
+
+- Export new common http helpers (http namespace)
+
+## 4.2.1
+
+### Patch Changes
+
+- Updated dependencies [4fe527c]
+  - @openfn/language-common@2.0.0
+
+## 4.2.0
+
+### Minor Changes
+
+- 5fb82f07: Export `group` operation from common
+
+### Patch Changes
+
+- Updated dependencies [5fb82f07]
+  - @openfn/language-common@1.15.0
+
+## 4.1.0
+
+### Minor Changes
+
+- 73433c20: Add `fnIf` operation
+
+### Patch Changes
+
+- Updated dependencies [106ecf6d]
+  - @openfn/language-common@1.14.0
+
+## 4.0.5
+
+### Patch Changes
+
+- Fix attribute metadata
+
+## 4.0.4
+
+### Patch Changes
+
+- Security updates (lodash,undici)
+- Updated dependencies
+  - @openfn/language-common@1.13.2
+
+## 4.0.3
+
+### Patch Changes
+
+- 222184d: remove Class Log and replaced
+
+  - `Log.success` with `console.log`
+  - `Log.warn` with `console.warn`
+  - `Log.error` with `console.error`
+
 ## 4.0.2
 
 ### Patch Changes

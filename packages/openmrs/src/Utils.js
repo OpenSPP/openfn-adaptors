@@ -1,44 +1,67 @@
 import { composeNextState } from '@openfn/language-common';
+import {
+  request as commonRequest,
+  makeBasicAuthHeader,
+  logResponse,
+} from '@openfn/language-common/util';
 
-export const Log = {
-  success: message => console.log(`✓ Success at ${new Date()}:\n∟ ${message}`),
-  warn: message => console.log(`⚠ Warning at ${new Date()}:\n∟ ${message}`),
-  error: message => console.log(`✗ Error at ${new Date()}:\n∟ ${message}`),
-  info: message => console.log(`ℹ Info at ${new Date()}:\n∟ ${message}`),
+export const prepareNextState = (state, response, callback) => {
+  const { body, ...responseWithoutBody } = response;
+  const nextState = {
+    ...composeNextState(state, response.body),
+    response: responseWithoutBody,
+  };
+
+  return callback(nextState);
 };
 
-export function handleError(error) {
-  if (error.response) {
-    const { method, path } = error.response.req;
-    const { status } = error.response;
-    if (Object.keys(error.response.body).length === 0) {
-      throw new Error(
-        `Server responded with:  \n${JSON.stringify(error.response, null, 2)}`
-      );
+export async function request(state, method, path, data, params) {
+  const { instanceUrl, username, password } = state.configuration;
+  const headers = makeBasicAuthHeader(username, password);
+
+  const options = {
+    body: data,
+    headers: {
+      ...headers,
+      'content-type': 'application/json',
+    },
+    query: params,
+    parseAs: 'json',
+  };
+
+  const url = `${instanceUrl}${path}`;
+
+  let allResponses;
+  let query = options?.query;
+  let allowPagination = isNaN(query?.startIndex);
+
+  do {
+    const requestOptions = query ? { ...options, query } : options;
+    const response = await commonRequest(method, url, requestOptions);
+    logResponse(response);
+
+    if (allResponses) {
+      allResponses.body.results.push(...response.body.results);
+    } else {
+      allResponses = response;
     }
+    const nextUrl = response?.body?.links?.find(
+      link => link.rel === 'next'
+    )?.uri;
 
-    const errorString = [
-      `Request: ${method} ${path}`,
-      `Got: ${status}`,
-      'Body:',
-      JSON.stringify(error.response.body, null, 2),
-    ].join('\n');
+    if (nextUrl) {
+      console.log(`Fetched ${response.body.results.length} results`);
+      console.log(`Fetching next page from ${nextUrl}`);
+      const urlObj = new URL(nextUrl);
+      const params = new URLSearchParams(urlObj.search);
+      const startIndex = params.get('startIndex');
 
-    throw new Error(errorString);
-  } else {
-    throw error;
-  }
-}
+      query = { ...query, startIndex };
+    } else {
+      delete allResponses.body.links;
+      break;
+    }
+  } while (allowPagination);
 
-export function handleResponse(response, state, callback) {
-  const { body } = response;
-  const nextState = composeNextState(state, { body });
-  if (callback) return callback(nextState);
-  return nextState;
-}
-
-const isArray = variable => !!variable && variable.constructor === Array;
-
-export function nestArray(data, key) {
-  return isArray(data) ? { [key]: data } : data;
+  return allResponses;
 }

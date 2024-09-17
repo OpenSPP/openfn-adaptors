@@ -1,104 +1,80 @@
-# @openfn/language-template
+# @openfn/language-openspp
 
-## 3.0.1
-
-### Patch Changes
-
-- Update lock files
-- Updated dependencies
-  - @openfn/language-common@1.8.1
-
-## 3.0.0
-
-### Major Changes
-
-- 2c1d603: Remove parameter reassignment to ensure proper functioning inside an
-  `each` block; add eslint
-
-  The packages receiving a major bump here exposed functions that didn't work as
-  expected inside `each` blocks. Users were previously wrapping these functions
-  inside their own custom `fn` blocks, and this change will ensure that they can
-  be used inside a standard each.
-
-  See https://github.com/OpenFn/adaptors/issues/275 for more details.
+## 2.0.1
 
 ### Patch Changes
 
-- Updated dependencies [2c1d603]
-  - @openfn/language-common@1.8.0
+- 8146c23: Fix typings in package.json
+- Updated dependencies [8146c23]
+  - @openfn/language-common@2.0.1
 
 ## 2.0.0
 
 ### Major Changes
 
-- 779596f: Use native fetch (undici) in template and add icons in openfn
+- Export new common http helpers (http namespace)
+
+## 1.3.1
+
+### Patch Changes
+
+- Updated dependencies [4fe527c]
+  - @openfn/language-common@2.0.0
+
+## 1.3.0
 
 ### Minor Changes
 
-- 1af9cd5: Better docs and resource names
-
-## 1.7.8
+- 73433c20: Add `fnIf` operation
 
 ### Patch Changes
 
-- 14f481e: mark execute as private
-- Updated dependencies [2b4c61a]
-  - @openfn/language-common@1.7.6
+- Updated dependencies [106ecf6d]
+  - @openfn/language-common@1.14.0
 
-## 1.7.7
-
-### Patch Changes
-
-- f7ebd3c: remove sample configuration
-
-## 1.7.6
+## 1.2.1
 
 ### Patch Changes
 
-- f2aed32: add examples
+- Security updates (lodash,undici)
+- Updated dependencies
+  - @openfn/language-common@1.13.2
 
-## 1.7.5
+## 1.2.0
 
-### Patch Changes
+### Changes
 
-- 6d8de03: change @constructor to @function and remove /\*_ @module Adaptor _/
+- 05defd2: add new functions, correcting docstring and add more examples
+  - correcting docstring input parameters type
+  - changing getServicePoint() from get by name into get by unique id
+  - add more examples in docstring
+  - getArea(): get existing area by id
+  - searchArea(): search existing area by domain
+  - searchServicePoint(): search existing service point by domain
 
-## 1.7.4
-
-### Patch Changes
-
-- f2a91a4: Update package exports
-- Updated dependencies [f2a91a4]
-  - @openfn/language-common@1.7.5
-
-## 1.7.3
-
-### Patch Changes
-
-- 8566b26: Fix typings
-- b3d45ff: Fix CJS export of npm package.
-- b5eb665: Adjusted docs for common and built to markdown
-- ecf5d30: remove sinon since it was not being used
-- Updated dependencies [8566b26]
-- Updated dependencies [b3d45ff]
-- Updated dependencies [b5eb665]
-- Updated dependencies [ecf5d30]
-  - @openfn/language-common@1.7.4
-
-## 1.7.2
+## 1.1.1
 
 ### Patch Changes
 
-- f4b3dd6: remove travis build url
+- 48b4e97: update `spp date time now string` format
 
-## 1.7.1
+## 1.1.0
 
-### Patch Changes
-
-- Fixed package.json for template adaptor
-
-## 1.7.0
-
-### Minor Changes
-
-- 554e905: Migrated to monorepo
+- Create OpenSPP adaptor with these functions:
+  - getGroup(): get existing group information
+  - getIndividual(): get existing individual information
+  - searchGroup(): search existing group by domain
+  - searchIndividual(): search existing individual by domain
+  - getGroupMembers(): get members from group
+  - getServicePoint(): get service points by name
+  - getPrograms(): get single program
+  - getPrograms(): get program list
+  - getEnrolledPrograms(): get list of enrolled program for each beneficiary
+  - enroll(): enroll beneficiary to a program
+  - unenroll(): unenroll beneficiary from program
+  - createIndividual(): create new individual
+  - updateIndividual(): update existing individual
+  - createGroup(): create new group
+  - updateGroup(): update existing group
+  - addToGroup(): add individual to group with(out) role
+  - removeFromGroup(): end membership of individual to group

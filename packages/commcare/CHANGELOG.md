@@ -1,5 +1,133 @@
 # @openfn/language-commcare
 
+## 3.1.1
+
+### Patch Changes
+
+- 8146c23: Fix typings in package.json
+- Updated dependencies [8146c23]
+  - @openfn/language-common@2.0.1
+
+## 3.1.0
+
+### Minor Changes
+
+- Add `cursor()` function from common
+- Add `dateFns` helper from common
+
+### Patch Changes
+
+- 90d74c7: Revise documentation
+
+## 3.0.0
+
+### Major Changes
+
+- Export new common http helpers (http namespace)
+
+## 2.3.2
+
+### Patch Changes
+
+- Updated dependencies [4fe527c]
+  - @openfn/language-common@2.0.0
+
+## 2.3.1
+
+### Patch Changes
+
+- Updated dependencies [4c08444]
+- Updated dependencies [73d0a02]
+  - @openfn/language-common@1.15.1
+
+## 2.3.0
+
+### Minor Changes
+
+- ac4b4a0: `get()` will now automatically paginate responses (unless an offset
+  is passed)
+
+## 2.2.1
+
+### Patch Changes
+
+- Updated dependencies [5fb82f07]
+  - @openfn/language-common@1.15.0
+
+## 2.2.0
+
+### Minor Changes
+
+- 73433c20: Add `fnIf` operation
+
+### Patch Changes
+
+- Updated dependencies [106ecf6d]
+  - @openfn/language-common@1.14.0
+
+## 2.1.0
+
+### Minor Changes
+
+- 0719de00: Implement better error handling and make post a public function
+
+### Patch Changes
+
+- Updated dependencies
+  - @openfn/language-common@1.13.5
+
+## 2.0.0
+
+Rebase the commcare adaptor on the new HTTP helpers.
+
+### Major Changes
+
+- Remove superagents and language-http dependencies
+- configuration schema: change applicationName to domain to match commcare's
+  configuration.
+- remove the `clientPost` function
+
+### Minor Changes
+
+- Implemented a get function for all get requests in commcare
+- Create a generic post function that allows for posting JSON data
+- Standardize auth to use either basic or APIKey across all operations
+- configuration schema: add apiKey
+- configuration schema: demote username and appId are optional
+
+### Patch Changes
+
+- Updated dependencies [12f02ed5]
+  - @openfn/language-common@1.13.4
+
+## 1.6.14
+
+### Patch Changes
+
+- Updated dependencies [88f99a8f]
+  - @openfn/language-common@1.13.3
+
+## 1.6.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @openfn/language-common@1.13.2
+
+## 1.6.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @openfn/language-common@1.13.1
+
+## 1.6.11
+
+### Patch Changes
+
+- Updated dependencies [1ad86651]
+  - @openfn/language-common@1.13.0
+
 ## 1.6.10
 
 ### Patch Changes

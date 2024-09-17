@@ -1,6 +1,6 @@
 {
   "name": "@openfn/language-openhim",
-  "version": "0.2.1",
+  "version": "0.3.2",
   "description": "openhim Language Pack for OpenFn",
   "main": "dist/index.cjs",
   "scripts": {
@@ -21,7 +21,7 @@
   ],
   "dependencies": {
     "JSONPath": "^0.10.0",
-    "@openfn/language-common": "^1.8.1",
+    "@openfn/language-common": "workspace:*",
     "lodash-fp": "^0.10.2",
     "superagent": "^3.7.0"
   },
@@ -37,7 +37,6 @@
     "sinon": "^1.17.2",
     "superagent-mock": "^1.10.0",
     "esno": "^0.16.3",
-    "@openfn/buildtools": "workspace:^1.0.1",
     "@openfn/simple-ast": "0.4.1",
     "rimraf": "^3.0.2"
   },
@@ -49,6 +48,7 @@
   "exports": {
     ".": {
       "import": "./dist/index.js",
+      "types": "./types/index.d.ts",
       "require": "./dist/index.cjs"
     },
     "./package.json": "./package.json"
